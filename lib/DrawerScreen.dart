@@ -18,7 +18,7 @@ class _DrawerScreen extends State<DrawerScreen> {
                 accountName: Text('Luu Van Lam'),
                 accountEmail: Text('+0383765687'),
                 currentAccountPicture: CircleAvatar(
-                  backgroundImage: AssetImage(''),
+                  //backgroundImage: AssetImage(''),
                   backgroundColor: Colors.white,
                 ),
                 arrowColor: Color.fromRGBO(255, 255, 255, 1),

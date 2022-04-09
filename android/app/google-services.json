@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "640858511826",
+    "project_id": "telegram-6d227",
+    "storage_bucket": "telegram-6d227.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:640858511826:android:6e56a87f6c6de9ca16500b",
+        "android_client_info": {
+          "package_name": "com.example.tele"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "640858511826-0ihcmh900k3btle0elf71gsh9sseojp4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tele",
+            "certificate_hash": "e180b9826b5f5087dc4d509c52eb11a99255b00d"
+          }
+        },
+        {
+          "client_id": "640858511826-ode50223374dbgbmbdskeeid1pc85ccu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_f_3i8596yyCd3M7M3FY6EZkMenH9gyk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "640858511826-ode50223374dbgbmbdskeeid1pc85ccu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

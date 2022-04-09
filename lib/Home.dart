@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'DrawerScreen.dart';
 import 'ChatModel.dart';
@@ -25,7 +26,30 @@ class _Home extends State<Home> {
           drawer: DrawerScreen(),
           body: ListView.separated(
             itemBuilder: (context, i) {
-              return ListTile(
+              print(i);
+              if (i >= item.length) {
+                if (i == item.length) {
+                  return ListTile(
+                    title: Text(
+                      'Your contact on Telegram',
+                      style: TextStyle(color: Color.fromRGBO(0, 0, 255, 0.8), fontWeight: FontWeight.bold),
+                    ),
+                  );
+                } else {
+                  return ListTile(
+                    leading: CircleAvatar(
+                      radius: 28,
+                      backgroundImage: NetworkImage(item[i - item.length - 1].prof_URL),
+                    ),
+                    title: Text(
+                      item[i - item.length - 1].name,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text('Last seen at ' + item[i - item.length - 1].message),
+                  );
+                }
+              } else {
+                return ListTile(
                   leading: CircleAvatar(
                     radius: 28,
                     backgroundImage: NetworkImage(item[i].prof_URL),
@@ -35,22 +59,33 @@ class _Home extends State<Home> {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(item[i].message),
-                  trailing: Row(
-                    children: <Widget>[
-                      Text(item[i].time),
-
-                    ],
-                  )
-              );
+                  trailing: Text(item[i].time),
+                );
+              }
             },
             separatorBuilder: (context, i) {
-              return Divider(
-                thickness: 1,
-                indent: 85,
-                color: Colors.black,
-              );
+              if (i >= item.length - 1) {
+                if (i == item.length - 1) {
+                  return Divider(
+                    thickness: 15,
+                    color: Colors.black,
+                  );
+                } else {
+                  return Divider(
+                    thickness: 0,
+                    indent: 85,
+                    color: Colors.black,
+                  );
+                }
+              } else {
+                return Divider(
+                  thickness: 1,
+                  indent: 85,
+                  color: Colors.black,
+                );
+              }
             },
-            itemCount: item.length,
+            itemCount: item.length * 2 + 1,
           ),
           floatingActionButton: FloatingActionButton(
             child: Icon(

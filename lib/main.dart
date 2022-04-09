@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'DrawerScreen.dart';
 import 'Home.dart';
+import 'Start.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Home(),
+      home: Start(),
     );
   }
 }
