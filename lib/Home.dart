@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'DrawerScreen.dart';
 import 'ChatModel.dart';
+import 'SearchScreen.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -19,14 +20,17 @@ class _Home extends State<Home> {
             actions: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(10.0),
-                child: Icon(Icons.search),
+                child: IconButton(
+                    icon: Icon(Icons.search),
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => SearchScreen()));
+                    }),
               )
             ],
           ),
           drawer: DrawerScreen(),
           body: ListView.separated(
             itemBuilder: (context, i) {
-              print(i);
               if (i >= item.length) {
                 if (i == item.length) {
                   return ListTile(
@@ -73,8 +77,7 @@ class _Home extends State<Home> {
                 } else {
                   return Divider(
                     thickness: 0,
-                    indent: 85,
-                    color: Colors.black,
+                    color: Colors.transparent,
                   );
                 }
               } else {

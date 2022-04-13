@@ -7,7 +7,7 @@ class ChatModel {
 }
 
 final List<ChatModel> item = [
-  ChatModel(name: 'sgsdgs', message: 'sdfghj', time: '10:12', prof_URL: ''),
+  ChatModel(name: 'sgsdgsasfgdfhgh,ngcfbxczx', message: 'sdfghj', time: '10:12', prof_URL: ''),
   ChatModel(name: 'sdgsdg', message: 'sdfhmg,j', time: '10:12', prof_URL: ''),
   ChatModel(name: 'sdgsdg', message: 'sdfhdndsfn', time: '10:12', prof_URL: ''),
   ChatModel(name: 'sdgsdgs', message: 'sfnsxfsns', time: '10:12', prof_URL: ''),

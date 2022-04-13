@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'SettingScreen.dart';
+
 class DrawerScreen extends StatefulWidget {
   @override
   _DrawerScreen createState() => _DrawerScreen();
@@ -52,7 +54,7 @@ class _DrawerScreen extends State<DrawerScreen> {
               DrawerListTitle(
                 iconData: Icons.settings,
                 title: "Settings",
-                onTitlePressed: () {},
+                onTitlePressed: () {Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => SettingScreen()));},
               ),
               Divider(
                 thickness: 2,
