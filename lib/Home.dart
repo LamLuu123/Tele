@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tele/ChatScreen.dart';
 import 'DrawerScreen.dart';
 import 'ChatModel.dart';
 import 'SearchScreen.dart';
@@ -50,7 +51,9 @@ class _Home extends State<Home> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text('Last seen at ' + item[i - item.length - 1].message),
-                      onTap: (){}
+                      onTap: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ChatScreen()));
+                      }
                   );
                 }
               } else {
@@ -65,7 +68,9 @@ class _Home extends State<Home> {
                   ),
                   subtitle: Text(item[i].message),
                   trailing: Text(item[i].time),
-                  onTap: (){},
+                  onTap: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ChatScreen()));
+                  },
                 );
               }
             },

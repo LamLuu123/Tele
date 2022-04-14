@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tele/ChatScreen.dart';
 import 'ChatModel.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -68,11 +69,14 @@ class _SearchScreen extends State<SearchScreen> {
       _height = MediaQuery.of(context).size.height;
       lenght=Searchitem.length;
     }
+    bool exist=false ; if(Searchitem.length==0){
+      exist=true;
+    }
     return Theme(
       data: ThemeData.dark(),
       child: Scaffold(
           appBar: SearchAppbar(searchController),
-          body: Container(
+          body: exist?Container(
               height: _height,
               margin: const EdgeInsets.symmetric(vertical: 0.0),
             child: ListView.separated(
@@ -104,7 +108,7 @@ class _SearchScreen extends State<SearchScreen> {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: Text( Searchitem[i].Semail),
-                      onTap: (){},
+                      onTap: (){Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ChatScreen()));},
                     );
                   }
                   },
@@ -119,7 +123,7 @@ class _SearchScreen extends State<SearchScreen> {
                     );
                   }
                   },
-                itemCount: lenght))),
+                itemCount: lenght)):Center(child: Text("Nothing Here!!!" ,style: TextStyle(fontSize: 30,color: Colors.grey),),)),
     );
   }
 }
