@@ -50,6 +50,7 @@ class _Home extends State<Home> {
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     subtitle: Text('Last seen at ' + item[i - item.length - 1].message),
+                      onTap: (){}
                   );
                 }
               } else {
@@ -64,6 +65,7 @@ class _Home extends State<Home> {
                   ),
                   subtitle: Text(item[i].message),
                   trailing: Text(item[i].time),
+                  onTap: (){},
                 );
               }
             },
@@ -76,12 +78,14 @@ class _Home extends State<Home> {
                   );
                 } else {
                   return Divider(
+                    height: 0,
                     thickness: 0,
                     color: Colors.transparent,
                   );
                 }
               } else {
                 return Divider(
+                  height: 1,
                   thickness: 1,
                   indent: 85,
                   color: Colors.black,

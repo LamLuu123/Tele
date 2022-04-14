@@ -57,6 +57,7 @@ class _DrawerScreen extends State<DrawerScreen> {
                 onTitlePressed: () {Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => SettingScreen()));},
               ),
               Divider(
+                height: 2,
                 thickness: 2,
                 color: Colors.black,
               ),

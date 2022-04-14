@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-
 import 'ChatModel.dart';
 
 class SearchScreen extends StatefulWidget {
+  const SearchScreen({Key key}) : super(key: key);
+
   @override
   _SearchScreen createState() => _SearchScreen();
 }
@@ -22,6 +23,7 @@ class _SearchScreen extends State<SearchScreen> {
                 searchController.clear();
                 setState(() {
                   empty = 0;
+                  Searchitem.clear();
                 });
               },
             ))
@@ -40,14 +42,17 @@ class _SearchScreen extends State<SearchScreen> {
               hintStyle: TextStyle(fontSize: 20, color: Colors.grey,),
             ),
             keyboardType: TextInputType.text,
-            onChanged: (String string) {
+            onEditingComplete: () {
               if (searchController.text != '') {
+                SearchModel().getSearchList(searchController.text);
                 setState(() {
                   empty = 1;
+
                 });
               } else
                 setState(() {
                   empty = 0;
+                  Searchitem.clear();
                 });
             }),
         actions: Actions());
@@ -57,9 +62,11 @@ class _SearchScreen extends State<SearchScreen> {
   Widget build(BuildContext context) {
     Axis Scroll = Axis.horizontal;
     double _height=100;
+    int lenght=item.length;
     if (empty != 0) {
       Scroll = Axis.vertical;
       _height = MediaQuery.of(context).size.height;
+      lenght=Searchitem.length;
     }
     return Theme(
       data: ThemeData.dark(),
@@ -68,48 +75,51 @@ class _SearchScreen extends State<SearchScreen> {
           body: Container(
               height: _height,
               margin: const EdgeInsets.symmetric(vertical: 0.0),
-              child: ListView.separated(
-                  scrollDirection: Scroll,
-                  itemBuilder: (context, i) {
-                    if (empty == 0) {
-                      return Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Container(
+            child: ListView.separated(
+                scrollDirection: Scroll,
+                itemBuilder: (context, i) {
+                  if (empty == 0) {
+                    return Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Container(
                             width: 50,
                             child: Column(
+                                children:<Widget>[
+                                  CircleAvatar(
+                                    radius: 28,
+                                    backgroundImage: NetworkImage(item[i].prof_URL),),
+                                  Text(item[i].name,style: const TextStyle(fontSize: 15),overflow: TextOverflow.clip,softWrap: false,),])
+                        ));
+                  } else {
+                    if(Searchitem.length==0){
 
-                              children:<Widget>[
-                                CircleAvatar(
-                              radius: 28,
-                              backgroundImage: NetworkImage(item[i].prof_URL),),
-                                Text(item[i].name,style: const TextStyle(fontSize: 15),overflow: TextOverflow.clip,softWrap: false,),])
-                          ));
-                    } else {
-                      return ListTile(
-                        leading: CircleAvatar(
-                          radius: 28,
-                          backgroundImage: NetworkImage(item[i].prof_URL),
-                        ),
-                        title: Text(
-                          item[i].name,
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text('Last seen at ' + item[i].message),
-                      );
                     }
+                    return ListTile(
+                      leading: CircleAvatar(
+                        radius: 28,
+                        backgroundImage: NetworkImage(""),
+                      ),
+                      title: Text(
+                        Searchitem[i].Sname,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text( Searchitem[i].Semail),
+                      onTap: (){},
+                    );
+                  }
                   },
-                  separatorBuilder: (context, i) {
-                    if (empty == 0) {
-                      return Divider();
-                    } else {
-                      return Divider(
-                        thickness: 1,
-                        indent: 85,
-                        color: Colors.black,
-                      );
-                    }
+                separatorBuilder: (context, i) {
+                  if (empty == 0) {
+                    return Divider();
+                  } else {
+                    return Divider(
+                      thickness: 1,
+                      indent: 85,
+                      color: Colors.black,
+                    );
+                  }
                   },
-                  itemCount: item.length))),
+                itemCount: lenght))),
     );
   }
 }
