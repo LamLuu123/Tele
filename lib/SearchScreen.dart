@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tele/ChatScreen.dart';
-import 'ChatModel.dart';
-
+import 'Database.dart';
+import 'data.dart';
+List<SearchModel> Searchitem= [];
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key key}) : super(key: key);
 
@@ -11,9 +12,10 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreen extends State<SearchScreen> {
   TextEditingController searchController = TextEditingController();
-  int empty = 0;
+  bool empty = true;
+  //int lenght =item.length;
   Actions() {
-    if (empty != 0) {
+    if (!empty) {
       return <Widget>[
         Padding(
             padding: const EdgeInsets.all(10.0),
@@ -23,7 +25,8 @@ class _SearchScreen extends State<SearchScreen> {
               onPressed: () {
                 searchController.clear();
                 setState(() {
-                  empty = 0;
+                  //lenght=item.length;
+                  empty = false;
                   Searchitem.clear();
                 });
               },
@@ -43,16 +46,29 @@ class _SearchScreen extends State<SearchScreen> {
               hintStyle: TextStyle(fontSize: 20, color: Colors.grey,),
             ),
             keyboardType: TextInputType.text,
-            onEditingComplete: () {
+            onChanged: (String string) {
+              Searchitem.clear();
+              FirebaseApi.searchUsers(searchController.text).forEach((element) {
+                Searchitem.clear();
+                for (int i = 0; i < element.length; i++) {
+                  Map<String, dynamic>Da = element[i].toJson();
+                  String name = Da['name'];
+                  DateTime time = Da['lastMessageTime'];
+                  String avatar = Da['urlAvatar'];
+                  setState(() {
+                    Searchitem.add(
+                        SearchModel(Sname: name, Stime: time, Savatar: avatar));
+                  });
+                }
+              }
+              );
               if (searchController.text != '') {
-                SearchModel().getSearchList(searchController.text);
                 setState(() {
-                  empty = 1;
-
+                  empty = false;
                 });
               } else
                 setState(() {
-                  empty = 0;
+                  empty = true;
                   Searchitem.clear();
                 });
             }),
@@ -63,67 +79,104 @@ class _SearchScreen extends State<SearchScreen> {
   Widget build(BuildContext context) {
     Axis Scroll = Axis.horizontal;
     double _height=100;
-    int lenght=item.length;
-    if (empty != 0) {
+    if (!empty) {
       Scroll = Axis.vertical;
       _height = MediaQuery.of(context).size.height;
-      lenght=Searchitem.length;
-    }
-    bool exist=false ; if(Searchitem.length==0){
-      exist=true;
+      setState(() {
+      });
     }
     return Theme(
       data: ThemeData.dark(),
       child: Scaffold(
           appBar: SearchAppbar(searchController),
-          body: exist?Container(
+          body:Container(
               height: _height,
               margin: const EdgeInsets.symmetric(vertical: 0.0),
-            child: ListView.separated(
-                scrollDirection: Scroll,
-                itemBuilder: (context, i) {
-                  if (empty == 0) {
-                    return Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Container(
-                            width: 50,
-                            child: Column(
-                                children:<Widget>[
-                                  CircleAvatar(
-                                    radius: 28,
-                                    backgroundImage: NetworkImage(item[i].prof_URL),),
-                                  Text(item[i].name,style: const TextStyle(fontSize: 15),overflow: TextOverflow.clip,softWrap: false,),])
-                        ));
-                  } else {
-                    if(Searchitem.length==0){
-
-                    }
-                    return ListTile(
-                      leading: CircleAvatar(
-                        radius: 28,
-                        backgroundImage: NetworkImage(""),
-                      ),
-                      title: Text(
-                        Searchitem[i].Sname,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text( Searchitem[i].Semail),
-                      onTap: (){Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ChatScreen()));},
-                    );
+            child:StreamBuilder(
+                stream: empty?FirebaseApi.getUsers():FirebaseApi.searchUsers(searchController.text),
+                builder: (context,snapshot){
+                  switch(snapshot.connectionState){
+                    case ConnectionState.waiting:
+                      return Center(child: CircularProgressIndicator());
+                    default:
+                      if(snapshot.hasError){
+                        print(snapshot.error);
+                        return buildText('Something Went Wrong Try later');
+                      }
+                      else{
+                        final item = snapshot.data;
+                        if(item.isEmpty){
+                          return buildText('No Users Found');
+                        }else{
+                          return ListView.separated(
+                              scrollDirection: Scroll,
+                              itemBuilder: (context, i) {
+                                if (empty) {
+                                  bool isMe;
+                                  if(item[i].idUser==myId){
+                                    isMe=true;
+                                  }else {
+                                    isMe=false;
+                                  }
+                                  return !isMe?Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Container(
+                                        width: 50,
+                                        child: Column(
+                                            children:<Widget>[
+                                              GestureDetector(
+                                                child:CircleAvatar(
+                                                    radius: 28,
+                                                    backgroundImage: NetworkImage(item[i].urlAvatar)),
+                                                onTap: (){Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ChatScreen(user: item[i])));},
+                                              )
+                                              ,
+                                              Text(item[i].name,style: const TextStyle(fontSize: 15),overflow: TextOverflow.clip,softWrap: false,),]),
+                                      )):Divider(height: 0,thickness: 0,color: Colors.transparent,);
+                                } else {
+                                  return  ListTile(
+                                    leading: CircleAvatar(
+                                      radius: 28,
+                                      backgroundImage: NetworkImage(Searchitem[i].Savatar),
+                                    ),
+                                    title: Text(
+                                      Searchitem[i].Sname,
+                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                    ),
+                                    subtitle: Text( Searchitem[i].Stime.toString()),
+                                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ChatScreen(user: item[i])));},
+                                  );
+                                }
+                              },
+                              separatorBuilder: (context, i) {
+                                if (empty) {
+                                  return Divider();
+                                } else {
+                                  return Divider(
+                                    thickness: 1,
+                                    indent: 85,
+                                    color: Colors.black,
+                                  );
+                                }
+                              },
+                              itemCount: item.length);
+                        }
+                      }
                   }
-                  },
-                separatorBuilder: (context, i) {
-                  if (empty == 0) {
-                    return Divider();
-                  } else {
-                    return Divider(
-                      thickness: 1,
-                      indent: 85,
-                      color: Colors.black,
-                    );
-                  }
-                  },
-                itemCount: lenght)):Center(child: Text("Nothing Here!!!" ,style: TextStyle(fontSize: 30,color: Colors.grey),),)),
-    );
+                }),
+    )
+    ));
   }
 }
+class SearchModel{
+  final String Sname;
+  final DateTime Stime;
+  final  String Savatar;
+  SearchModel({this.Sname,this.Stime,this.Savatar});
+}
+Widget buildText(String text) => Center(
+  child: Text(
+    text,
+    style: TextStyle(fontSize: 24, color: Colors.white),
+  ),
+);

@@ -1,16 +1,33 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tele/Database.dart';
+import 'package:tele/Home.dart';
+import 'package:tele/data.dart';
+import 'package:tele/message.dart';
+import 'package:tele/user.dart';
+import 'message.dart';
 
 class ChatScreen extends StatefulWidget {
   static const id = 'chat_screen';
+  final User user;
+  const ChatScreen({@required this.user,Key key}):super(key: key);
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final _messageController = TextEditingController();
+  final TextEditingController _messageController = TextEditingController();
   final _messageFocusNode = FocusNode();
-
-  bool _isComposing = false;
+  bool _messageEmpty=true;
+  String Messages='';
+  void sendMess()async{
+    FocusScope.of(context).unfocus();
+    await FirebaseApi.uploadMessage(widget.user.idUser,Messages);
+    _messageController.clear();
+    setState(() {
+      _messageEmpty=true;
+    });
+  }
   Widget _buildComposer() {
     return Container(
       decoration: BoxDecoration(
@@ -23,6 +40,7 @@ class _ChatScreenState extends State<ChatScreen> {
             child: Padding(
               padding: EdgeInsets.all(8.0),
               child: TextField(
+                textCapitalization: TextCapitalization.sentences,
                 controller: _messageController,
                 focusNode: _messageFocusNode,
                 decoration: InputDecoration.collapsed(
@@ -30,20 +48,25 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 onChanged: (value) {
                   setState(() {
-                    _isComposing = value.isNotEmpty;
+                    Messages=value;
+                    if(_messageController.text!=''){
+                      _messageEmpty=false;
+                    }else _messageEmpty=true;
                   });
                 },
               ),
             ),
           ),
-          IconButton(
-            onPressed: () {},
+
+          if(_messageEmpty)IconButton(
+            onPressed: () {
+            },
             icon: Icon(Icons.attachment_rounded),
           ),
-          IconButton(
+          _messageEmpty?IconButton(
             onPressed: () {},
             icon: Icon(Icons.mic_none),
-          ),
+          ):IconButton(onPressed: Messages.trim().isEmpty?null: sendMess, icon: Icon(Icons.send))
         ],
       ),
     );
@@ -55,8 +78,8 @@ class _ChatScreenState extends State<ChatScreen> {
         data: ThemeData.dark(),
         child: Scaffold(
             appBar: AppBar(
-              leading: IconButton(onPressed: () {Navigator.pop(context);}, icon: Icon(Icons.arrow_back)),
-              title: Text("Con cu"),
+              leading: IconButton(onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (BuildContext contxet) => Home()));}, icon: Icon(Icons.arrow_back)),
+              title: Text(widget.user.name),
               actions: <Widget>[
                 IconButton(onPressed: () {}, icon: Icon(Icons.call)),
                 IconButton(onPressed: () {}, icon: Icon(Icons.more_vert_outlined)),
@@ -66,69 +89,110 @@ class _ChatScreenState extends State<ChatScreen> {
               decoration: BoxDecoration(
                 image: DecorationImage(image: AssetImage("assets/back.png"), fit: BoxFit.cover),
               ),
-              child: Column(
-                children: <Widget>[
+              child: SafeArea(
+                child:Column(children: <Widget>[
                   Expanded(
-                    child: StreamBuilder(
+                  child: StreamBuilder<List<Message>>(
+                      stream: FirebaseApi.getMessages(widget.user.idUser),
                       builder: (context, snapshot) {
-                        if (!snapshot.hasData) {
-                          return Center(
-                            child: Text(
-                              'No message here',
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          );
-                        }
-                        final docs = snapshot.data.documents;
-                        return ListView(
-                          padding: EdgeInsets.all(8.0),
-                          reverse: true,
-                          children: List.generate(
-                            docs.length,
-                                (index) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text('Anonymous'),
-                                  Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(8.0),
-                                        topRight: Radius.circular(8.0),
-                                        bottomLeft: Radius.circular(8.0),
-                                        bottomRight: Radius.circular(8.0),
-                                      ),
-                                    ),
-                                    color: Colors.blueGrey,
-                                    elevation: 0.0,
-                                    child: Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        docs[index]['message'],
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 18.0,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(height: 4.0),
-                                ],
+                        switch (snapshot.connectionState) {
+                        //case ConnectionState.waiting:
+                        //return Center(child: CircularProgressIndicator());
+                          default:
+                            if (snapshot.hasError) {
+                              return buildText(
+                                  'Something Went Wrong Try later');
+                            } else {
+                              final messages = snapshot.data;
+                              if (messages?.isEmpty??true) {
+                                return const Center(
+                                child: Text(
+                                  "Say Hi...",
+                                  style: TextStyle(fontSize: 24, color: Colors.black),
+                                ),
                               );
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  Divider(),
-                  _buildComposer(),
-                ],
+                              } else {
+                                return ListView.builder(
+                                physics: BouncingScrollPhysics(),
+                                reverse: true,
+                                itemCount: messages.length,
+                                itemBuilder: (context, index) {
+                                  bool isMe=false;
+                                  if(messages[index].idUser == myId){
+                                    isMe=true;
+                                  }
+                                  else isMe=false;
+                                  final message = messages[index];
+                                  final radius = Radius.circular(20);
+                                  final borderRadius = BorderRadius.all(radius);
+                                  return Row(
+                                    mainAxisAlignment: (isMe)
+                                        ? MainAxisAlignment.end
+                                        : MainAxisAlignment.start,
+                                    children: <Widget>[
+                                      if (!isMe)
+                                        CircleAvatar(
+                                            radius: 10,
+                                            backgroundImage: NetworkImage(
+                                                message.urlAvatar)),
+                                      Container(
+                                        padding: EdgeInsets.all(16),
+                                        margin: EdgeInsets.all(2),
+                                        constraints: BoxConstraints(
+                                            maxWidth: 140),
+                                        decoration: BoxDecoration(
+                                          color: (isMe)
+                                              ? Colors.pink[100]
+                                              : Theme
+                                              .of(context)
+                                              .accentColor,
+                                          borderRadius: (isMe)
+                                              ? borderRadius.subtract(
+                                              BorderRadius.only(
+                                                  bottomRight: radius))
+                                              : borderRadius.subtract(
+                                              BorderRadius.only(
+                                                  bottomLeft: radius)),
+                                        ),
+                                        child: buildMessage(message),
+                                      ),
+                                    ],
+                                  );
+                                },);
+                              }
+                            }
+                        }
+                      }),
+                ),
+                  _buildComposer(),],)
+
+
+          )
               ),
-            )));
+            ));
   }
+}
+Widget buildText(String text) => Center(
+  child: Text(
+    text,
+    style: TextStyle(fontSize: 24, color: Colors.white),
+  ),
+);
+Widget buildMessage(Message message){
+  bool isMe;
+  if(message.idUser==myId){
+    isMe=true;
+  }
+  else isMe=false;
+  return Column(
+  crossAxisAlignment:
+  (isMe) ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+  children: <Widget>[
+    Text(
+      message.message,
+      style: TextStyle(color: (isMe) ? Colors.black : Colors.white),
+      textAlign: (isMe) ? TextAlign.end : TextAlign.start,
+    ),
+  ],
+);
 }

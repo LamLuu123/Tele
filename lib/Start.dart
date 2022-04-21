@@ -9,7 +9,7 @@ class Start extends StatefulWidget {
 class _StartScreen extends State<Start> {
   @override
   Widget build(BuildContext context) {
-    ElevatedButton _button = new ElevatedButton(
+    ElevatedButton _button = ElevatedButton(
         onPressed: () {
           Navigator.push(
             context,
