@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../utils.dart';
 import 'data.dart';
 import 'message.dart';
 import 'user.dart';
-
-import '../utils.dart';
 
 class FirebaseApi {
   static Stream<List<User>> getUsers() => FirebaseFirestore.instance
@@ -18,10 +18,10 @@ class FirebaseApi {
       .snapshots()
       .transform(Utils.transformer(User.fromJson));
 
-  static Future uploadMessage(String idUser, String message) async {
-    final refMessages =
-    FirebaseFirestore.instance.collection('chats/$idUser/messages');
-
+  static Future uploadMessage(String idUser,String myidUser, String message) async {
+    final refMessages1 =
+    FirebaseFirestore.instance.collection('chats/$idUser/messagesto$myidUser');
+    final refMessages2 =FirebaseFirestore.instance.collection('chats/$myidUser/messagesto$idUser');
     final newMessage = Message(
       idUser: myId,
       urlAvatar: myUrlAvatar,
@@ -29,17 +29,24 @@ class FirebaseApi {
       message: message,
       createdAt: DateTime.now(),
     );
-    await refMessages.add(newMessage.toJson());
+    await refMessages1.add(newMessage.toJson());
+    await refMessages2.add(newMessage.toJson());
 
     final refUsers = FirebaseFirestore.instance.collection('users');
     await refUsers
         .doc(idUser)
-        .update({UserField.lastMessageTime: DateTime.now()});
+        .update({UserField.lastMessageTime: DateTime.now(),UserField.LastMess: message});
+    await refUsers
+        .doc(myidUser)
+        .update({UserField.lastMessageTime: DateTime.now(),UserField.LastMess: message});
+    Map<String,dynamic> Data= {
+      "LastMess": message,
+    };
   }
 
-  static Stream<List<Message>> getMessages(String idUser) =>
+  static Stream<List<Message>> getMessages(String idUser, String myidUser) =>
       FirebaseFirestore.instance
-          .collection('chats/$idUser/messages')
+          .collection('chats/$idUser/messagesto$myidUser')
           .orderBy(MessageField.createdAt, descending: true)
           .snapshots()
           .transform(Utils.transformer(Message.fromJson));
@@ -56,6 +63,11 @@ class FirebaseApi {
         final newUser = user.copyWith(idUser: userDoc.id);
 
         await userDoc.set(newUser.toJson());
+        Map<String,dynamic> Data={
+          "From": user.idUser,
+          "Mess":'',
+        };
+        //final refUsersLast = FirebaseFirestore.instance.collection('users').doc('${newUser.idUser}').collection(collectionPath);
       }
     }
   }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tele/Home.dart';
+import 'Home.dart';
 
 class Start extends StatefulWidget {
   @override
@@ -9,7 +9,7 @@ class Start extends StatefulWidget {
 class _StartScreen extends State<Start> {
   @override
   Widget build(BuildContext context) {
-    ElevatedButton _button = ElevatedButton(
+    final _button = ElevatedButton(
         onPressed: () {
           Navigator.push(
             context,
@@ -24,28 +24,28 @@ class _StartScreen extends State<Start> {
                     curve: Curves.easeOut,
                   )),
                   child: child),
-              transitionDuration: Duration(milliseconds: 2000),
+              transitionDuration: const Duration(milliseconds: 2000),
               //transitionDuration: Duration(milliseconds: 2000),
             ),
           );
         },
         style: ElevatedButton.styleFrom(
-          textStyle: TextStyle(
+          textStyle: const TextStyle(
             fontSize: 20,
             color: Color.fromRGBO(255, 255, 255, 1),
           ),
-          primary: Color.fromRGBO(0, 0, 255, 0.8),
+          primary: const Color.fromRGBO(0, 0, 255, 0.8),
         ),
         child: const Text(
           'Start Messaging',
         ));
-    SizedBox box = new SizedBox(height: 50, width: 200, child: _button);
+    final box = SizedBox(height: 50, width: 200, child: _button);
     return Scaffold(
         backgroundColor: Colors.black,
         body: Center(
             child: Stack(
               children: <Widget>[
-                new Positioned(
+                Positioned(
                   bottom: 80,
                   left: MediaQuery.of(context).size.width * 0.5 - box.width * 0.5,
                   child: ClipRRect(

@@ -4,12 +4,14 @@ import '../utils.dart';
 
 class UserField {
   static final String lastMessageTime = 'lastMessageTime';
+  static final String LastMess = 'LastMess';
 }
 
 class User {
   final String idUser;
   final String name;
   final String urlAvatar;
+  final String LastMess;
   final DateTime lastMessageTime;
 
   const User({
@@ -17,12 +19,14 @@ class User {
     @required this.name,
     @required this.urlAvatar,
     @required this.lastMessageTime,
+    @required this.LastMess,
   });
 
   User copyWith({
     String idUser,
     String name,
     String urlAvatar,
+    String LastMess,
     String lastMessageTime,
   }) =>
       User(
@@ -30,6 +34,7 @@ class User {
         name: name ?? this.name,
         urlAvatar: urlAvatar ?? this.urlAvatar,
         lastMessageTime: lastMessageTime ?? this.lastMessageTime,
+        LastMess: LastMess??this.LastMess,
       );
 
   static User fromJson(Map<String, dynamic> json) => User(
@@ -37,6 +42,7 @@ class User {
     name: json['name'],
     urlAvatar: json['urlAvatar'],
     lastMessageTime: Utils.toDateTime(json['lastMessageTime']),
+    LastMess: json['LastMess'],
   );
 
   Map<String, dynamic> toJson() => {
@@ -44,5 +50,6 @@ class User {
     'name': name,
     'urlAvatar': urlAvatar,
     'lastMessageTime': Utils.fromDateTimeToJson(lastMessageTime),
+    'LastMess':LastMess,
   };
 }

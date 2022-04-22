@@ -9,17 +9,16 @@ class DrawerScreen extends StatefulWidget {
 
 class _DrawerScreen extends State<DrawerScreen> {
   @override
-  Widget build(BuildContext context) {
-    return Theme(
+  Widget build(BuildContext context) => Theme(
         data: ThemeData.dark(),
         child: Drawer(
           child: ListView(
             children: <Widget>[
               UserAccountsDrawerHeader(
-                decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.8)),
-                accountName: Text('Luu Van Lam'),
-                accountEmail: Text('+0383765687'),
-                currentAccountPicture: CircleAvatar(
+                decoration: const BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.8)),
+                accountName: const Text('Luu Van Lam'),
+                accountEmail: const Text('+0383765687'),
+                currentAccountPicture: const CircleAvatar(
                   //backgroundImage: AssetImage(''),
                   backgroundColor: Colors.white,
                 ),
@@ -28,53 +27,52 @@ class _DrawerScreen extends State<DrawerScreen> {
               ),
               DrawerListTitle(
                 iconData: Icons.group,
-                title: "New Group",
+                title: 'New Group',
                 onTitlePressed: () {},
               ),
               DrawerListTitle(
                 iconData: Icons.person,
-                title: "Contacts",
+                title: 'Contacts',
                 onTitlePressed: () {},
               ),
               DrawerListTitle(
                 iconData: Icons.call,
-                title: "Call",
+                title: 'Call',
                 onTitlePressed: () {},
               ),
               DrawerListTitle(
                 iconData: Icons.location_history,
-                title: "People Nearby",
+                title: 'People Nearby',
                 onTitlePressed: () {},
               ),
               DrawerListTitle(
                 iconData: Icons.bookmark,
-                title: "Save Messages",
+                title: 'Save Messages',
                 onTitlePressed: () {},
               ),
               DrawerListTitle(
                 iconData: Icons.settings,
-                title: "Settings",
-                onTitlePressed: () {Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => SettingScreen()));},
+                title: 'Settings',
+                onTitlePressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => SettingScreen()));},
               ),
-              Divider(
+              const Divider(
                 height: 2,
                 thickness: 2,
                 color: Colors.black,
               ),
               DrawerListTitle(
                 iconData: Icons.person_add,
-                title: "Invite Friend",
+                title: 'Invite Friend',
                 onTitlePressed: () {},
               ),
               DrawerListTitle(
                 iconData: Icons.help_outline,
-                title: "Teleram Features",
+                title: 'Teleram Features',
                 onTitlePressed: () {},
               ),
             ],
           ),
         ));
-  }
 }
 
 class DrawerListTitle extends StatelessWidget {
@@ -85,8 +83,7 @@ class DrawerListTitle extends StatelessWidget {
   const DrawerListTitle({Key key, this.iconData, this.onTitlePressed, this.title}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return ListTile(
+  Widget build(BuildContext context) => ListTile(
       dense: true,
       leading: Icon(iconData),
       title: Text(
@@ -95,5 +92,4 @@ class DrawerListTitle extends StatelessWidget {
       ),
       onTap: onTitlePressed,
     );
-  }
 }

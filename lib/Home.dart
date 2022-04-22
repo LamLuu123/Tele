@@ -1,14 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:tele/ChatScreen.dart';
-import 'package:tele/data.dart';
+import 'package:intl/intl.dart';
+
+import 'ChatScreen.dart';
+import 'Database.dart';
 import 'DrawerScreen.dart';
 import 'SearchScreen.dart';
-import 'Database.dart';
-import 'message.dart';
+import 'data.dart';
 import 'user.dart';
-import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -16,19 +14,18 @@ class Home extends StatefulWidget {
 }
 class _Home extends State<Home> {
   @override
-  Widget build(BuildContext context) {
-    return Theme(
+  Widget build(BuildContext context) => Theme(
         data: ThemeData.dark(),
         child: Scaffold(
           appBar: AppBar(
-            title: Text("Telegram"),
+            title: const Text('Telegram'),
             actions: <Widget>[
               Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(10),
                 child: IconButton(
-                    icon: Icon(Icons.search),
+                    icon: const Icon(Icons.search),
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => SearchScreen()));
+                      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const SearchScreen()));
                     }),
               )
             ],
@@ -37,7 +34,7 @@ class _Home extends State<Home> {
           body: SafeArea(
             child: StreamBuilder<List<User>>(
               stream: FirebaseApi.getUsers(),
-              builder: (context,snapshot){
+              builder: (BuildContext context,AsyncSnapshot<List<User>> snapshot){
                 switch (snapshot.connectionState) {
                   //case ConnectionState.waiting:
                      //return Center(child: CircularProgressIndicator());
@@ -47,18 +44,18 @@ class _Home extends State<Home> {
                      return buildText('Something Went Wrong Try later');
                      }
                  else {
-                  final items = snapshot.data;
+                  final List<User> items = snapshot.data;
 
                   if (items?.isEmpty??true) {
                     return buildText('No Users Found');
                   } else {
                     return ListView.separated(
-                      physics: BouncingScrollPhysics(),
-                      itemBuilder: (context, i) {
+                      physics: const BouncingScrollPhysics(),
+                      itemBuilder: (BuildContext context, int i) {
                         bool isMe;
                         if (i >= items.length) {
                           if (i == items.length) {
-                              return ListTile(
+                              return const ListTile(
                                 title: Text(
                                   'Your contact on Telegram',
                                   style: TextStyle(color: Color.fromRGBO(0, 0, 255, 0.8), fontWeight: FontWeight.bold),
@@ -77,15 +74,18 @@ class _Home extends State<Home> {
                                 ),
                                 title: Text(
                                   items[i - items.length - 1].name,
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 subtitle: Text('Last seen at '+DateFormat.Hm().format(items[i - items.length - 1].lastMessageTime)+", " + DateFormat.yMd().format(items[i - items.length - 1].lastMessageTime)),
                                 onTap: (){
                                   Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ChatScreen(user: items[i - items.length - 1])));
                                 }
-                            ):Divider(height: 0,thickness: 0,color: Colors.transparent,);
+                            ):const Divider(height: 0,thickness: 0,color: Colors.transparent,);
                           }
                         } else {
+                          //GetLast(items[i].idUser,lastMess);
+
+                          //print(lastMess.LastMess);
                         if(items[i].idUser==myId){
                         isMe=true;
                         }else {
@@ -98,26 +98,26 @@ class _Home extends State<Home> {
                             ),
                             title: Text(
                               items[i].name,
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: const TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            subtitle: Text(''),
+                            subtitle: items[i].LastMess.isNotEmpty?Text(items[i].LastMess):const Text(''),
                             trailing: Text(DateFormat.Hm().format(items[i].lastMessageTime)),
                             onTap: (){
                               Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ChatScreen(user: items[i])));
                             },
-                          ):Divider(height: 0,thickness: 0,color: Colors.transparent,);
+                          ):const Divider(height: 0,thickness: 0,color: Colors.transparent,);
                         }
                       },
-                      separatorBuilder: (context, i) {
+                      separatorBuilder: (BuildContext context, int i) {
                         bool isMe;
                         if (i >= items.length - 1) {
                           if (i == items.length - 1) {
-                            return Divider(
+                            return const Divider(
                               thickness: 15,
                               color: Colors.black,
                             );
                           } else {
-                            return Divider(
+                            return const Divider(
                               height: 0,
                               thickness: 0,
                               color: Colors.transparent,
@@ -129,12 +129,12 @@ class _Home extends State<Home> {
                           }else {
                             isMe=false;
                           }
-                          return !isMe?Divider(
+                          return !isMe?const Divider(
                             height: 1,
                             thickness: 1,
                             indent: 85,
                             color: Colors.black,
-                          ):Divider(height: 0,thickness: 0,color: Colors.transparent,);
+                          ):const Divider(height: 0,thickness: 0,color: Colors.transparent,);
                         }
                       },
                       itemCount: items.length * 2 +1,
@@ -145,27 +145,19 @@ class _Home extends State<Home> {
               }),
           ),
           floatingActionButton: FloatingActionButton(
-            child: Icon(
+            backgroundColor: Color.fromRGBO(0, 0, 255, 0.8),
+            onPressed: () {},
+            child: const Icon(
               Icons.create,
               color: Colors.white,
             ),
-            backgroundColor: Color.fromRGBO(0, 0, 255, 0.8),
-            onPressed: () {},
           ),
         ));
-  }
 
 }
   Widget buildText(String text) => Center(
     child: Text(
       text,
-      style: TextStyle(fontSize: 24, color: Colors.white),
+      style: const TextStyle(fontSize: 24, color: Colors.white),
     ),
   );
-String getLastMess(String idUser){
-  String LastMess='Nothing';
-  Future<QuerySnapshot<Map<String, dynamic>>> temp = FirebaseApi.getLastMessage(idUser);
-  temp;
-  print(temp);
-  return LastMess;
-}

@@ -7,19 +7,15 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreen extends State<SettingScreen> {
-  final title = 'GeeksforGeeks';
   @override
-  Widget build(BuildContext context) {
-    return Theme(
+  Widget build(BuildContext context) => Theme(
         data: ThemeData.dark(),
         child: Scaffold(
             body: CustomScrollView(
               slivers: <Widget>[
                 SliverAppBar(
-                  snap: false,
                   pinned: true,
-                  floating: false,
-                  flexibleSpace: FlexibleSpaceBar(
+                  flexibleSpace: const FlexibleSpaceBar(
                     titlePadding: EdgeInsets.fromLTRB(30,20,0,0),
                       centerTitle: true,
                       title:  ListTile(
@@ -50,7 +46,9 @@ class _SettingScreen extends State<SettingScreen> {
                         (context, index) {
                           if(index==0){
                             return ListTile(
-                              title: Text(accountItem[index].titles,style: TextStyle(color: Color.fromRGBO(0, 0, 255, 0.8)),
+                              title: Text(accountItem[index].titles,style:
+                              const TextStyle(
+                                  color: Color.fromRGBO(0, 0, 255, 0.8)),
                               ),
                             );
                           }
@@ -68,7 +66,9 @@ class _SettingScreen extends State<SettingScreen> {
                         (context, index) {
                           if(index==0){
                             return ListTile(
-                              title: Text(settingItem[index].titles,style: TextStyle(color: Color.fromRGBO(0, 0, 255, 0.8)),
+                              title: Text(settingItem[index].titles,style:
+                              const TextStyle(
+                                  color: Color.fromRGBO(0, 0, 255, 0.8)),
                               ),
                             );
                           }
@@ -85,7 +85,9 @@ class _SettingScreen extends State<SettingScreen> {
                         (context, index) {
                           if(index==0){
                             return ListTile(
-                              title: Text(helpItem[index].titles,style: TextStyle(color: Color.fromRGBO(0, 0, 255, 0.8)),
+                              title: Text(helpItem[index].titles,style:
+                              const TextStyle(
+                                  color: Color.fromRGBO(0, 0, 255, 0.8)),
                               ),
                             );
                           }
@@ -99,5 +101,4 @@ class _SettingScreen extends State<SettingScreen> {
                 )//SliverList
               ], //<Widget>[]
             )));
-  }
 }

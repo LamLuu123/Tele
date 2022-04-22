@@ -1,14 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:tele/Database.dart';
-import 'package:tele/Home.dart';
-import 'package:tele/data.dart';
-import 'package:tele/message.dart';
-import 'package:tele/user.dart';
+import 'Database.dart';
+import 'Home.dart';
+import 'data.dart';
 import 'message.dart';
+import 'user.dart';
 
 class ChatScreen extends StatefulWidget {
-  static const id = 'chat_screen';
+  static const String id = 'chat_screen';
   final User user;
   const ChatScreen({@required this.user,Key key}):super(key: key);
   @override
@@ -17,20 +15,19 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
-  final _messageFocusNode = FocusNode();
+  final FocusNode _messageFocusNode = FocusNode();
   bool _messageEmpty=true;
   String Messages='';
   void sendMess()async{
     FocusScope.of(context).unfocus();
-    await FirebaseApi.uploadMessage(widget.user.idUser,Messages);
+    await FirebaseApi.uploadMessage(widget.user.idUser,myId,Messages);
     _messageController.clear();
     setState(() {
       _messageEmpty=true;
     });
   }
-  Widget _buildComposer() {
-    return Container(
-      decoration: BoxDecoration(
+  Widget _buildComposer() => Container(
+      decoration: const BoxDecoration(
         color: Colors.grey,
       ),
       child: Row(
@@ -43,7 +40,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 textCapitalization: TextCapitalization.sentences,
                 controller: _messageController,
                 focusNode: _messageFocusNode,
-                decoration: InputDecoration.collapsed(
+                decoration: const InputDecoration.collapsed(
                   hintText: 'Your message here...',
                 ),
                 onChanged: (value) {
@@ -51,7 +48,9 @@ class _ChatScreenState extends State<ChatScreen> {
                     Messages=value;
                     if(_messageController.text!=''){
                       _messageEmpty=false;
-                    }else _messageEmpty=true;
+                    }else {
+                      _messageEmpty=true;
+                    }
                   });
                 },
               ),
@@ -61,20 +60,18 @@ class _ChatScreenState extends State<ChatScreen> {
           if(_messageEmpty)IconButton(
             onPressed: () {
             },
-            icon: Icon(Icons.attachment_rounded),
+            icon: const Icon(Icons.attachment_rounded),
           ),
-          _messageEmpty?IconButton(
+          if (_messageEmpty) IconButton(
             onPressed: () {},
-            icon: Icon(Icons.mic_none),
-          ):IconButton(onPressed: Messages.trim().isEmpty?null: sendMess, icon: Icon(Icons.send))
+            icon: const Icon(Icons.mic_none),
+          ) else IconButton(onPressed: Messages.trim().isEmpty?null: sendMess, icon: Icon(Icons.send))
         ],
       ),
     );
-  }
 
   @override
-  Widget build(BuildContext context) {
-    return Theme(
+  Widget build(BuildContext context) => Theme(
         data: ThemeData.dark(),
         child: Scaffold(
             appBar: AppBar(
@@ -86,14 +83,14 @@ class _ChatScreenState extends State<ChatScreen> {
               ],
             ),
             body: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 image: DecorationImage(image: AssetImage("assets/back.png"), fit: BoxFit.cover),
               ),
               child: SafeArea(
                 child:Column(children: <Widget>[
                   Expanded(
                   child: StreamBuilder<List<Message>>(
-                      stream: FirebaseApi.getMessages(widget.user.idUser),
+                      stream: FirebaseApi.getMessages(widget.user.idUser,myId),
                       builder: (context, snapshot) {
                         switch (snapshot.connectionState) {
                         //case ConnectionState.waiting:
@@ -107,7 +104,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               if (messages?.isEmpty??true) {
                                 return const Center(
                                 child: Text(
-                                  "Say Hi...",
+                                  'Say Hi...',
                                   style: TextStyle(fontSize: 24, color: Colors.black),
                                 ),
                               );
@@ -121,12 +118,14 @@ class _ChatScreenState extends State<ChatScreen> {
                                   if(messages[index].idUser == myId){
                                     isMe=true;
                                   }
-                                  else isMe=false;
+                                  else {
+                                    isMe=false;
+                                  }
                                   final message = messages[index];
                                   final radius = Radius.circular(20);
                                   final borderRadius = BorderRadius.all(radius);
                                   return Row(
-                                    mainAxisAlignment: (isMe)
+                                    mainAxisAlignment: isMe
                                         ? MainAxisAlignment.end
                                         : MainAxisAlignment.start,
                                     children: <Widget>[
@@ -136,17 +135,17 @@ class _ChatScreenState extends State<ChatScreen> {
                                             backgroundImage: NetworkImage(
                                                 message.urlAvatar)),
                                       Container(
-                                        padding: EdgeInsets.all(16),
-                                        margin: EdgeInsets.all(2),
-                                        constraints: BoxConstraints(
+                                        padding: const EdgeInsets.all(16),
+                                        margin: const EdgeInsets.all(2),
+                                        constraints: const BoxConstraints(
                                             maxWidth: 140),
                                         decoration: BoxDecoration(
-                                          color: (isMe)
+                                          color: isMe
                                               ? Colors.pink[100]
                                               : Theme
                                               .of(context)
                                               .accentColor,
-                                          borderRadius: (isMe)
+                                          borderRadius: isMe
                                               ? borderRadius.subtract(
                                               BorderRadius.only(
                                                   bottomRight: radius))
@@ -170,12 +169,11 @@ class _ChatScreenState extends State<ChatScreen> {
           )
               ),
             ));
-  }
 }
 Widget buildText(String text) => Center(
   child: Text(
     text,
-    style: TextStyle(fontSize: 24, color: Colors.white),
+    style: const TextStyle(fontSize: 24, color: Colors.white),
   ),
 );
 Widget buildMessage(Message message){
@@ -183,15 +181,17 @@ Widget buildMessage(Message message){
   if(message.idUser==myId){
     isMe=true;
   }
-  else isMe=false;
+  else {
+    isMe=false;
+  }
   return Column(
   crossAxisAlignment:
-  (isMe) ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+  isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
   children: <Widget>[
     Text(
       message.message,
-      style: TextStyle(color: (isMe) ? Colors.black : Colors.white),
-      textAlign: (isMe) ? TextAlign.end : TextAlign.start,
+      style: TextStyle(color: isMe ? Colors.black : Colors.white),
+      textAlign: isMe ? TextAlign.end : TextAlign.start,
     ),
   ],
 );
