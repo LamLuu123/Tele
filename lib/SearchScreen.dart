@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'ChatScreen.dart';
 import 'Database.dart';
 import 'data.dart';
-List<SearchModel> searchItem= [];
+List<SearchModel> Searchitem= [];
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key key}) : super(key: key);
 
@@ -13,48 +13,48 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreen extends State<SearchScreen> {
   TextEditingController searchController = TextEditingController();
   bool empty = true;
-  List<Widget> Actions() {
+  Actions() {
     if (!empty) {
       return <Widget>[
         Padding(
             padding: const EdgeInsets.all(10.0),
             child: IconButton(
-              icon: const Icon(Icons.clear),
+              icon: Icon(Icons.clear),
               color: Colors.white,
               onPressed: () {
                 searchController.clear();
                 setState(() {
-                  //lenght=item.length;
-                  empty = false;
-                  searchItem.clear();
+                  empty = true;
+                  Searchitem.clear();
                 });
               },
             ))
       ];
     }
-    return null;
+    return;
   }
 
-  AppBar SearchAppbar(TextEditingController searchController) => AppBar(
+  SearchAppbar(TextEditingController searchController) {
+    return AppBar(
         title: TextFormField(
             cursorColor: Colors.white,
             controller: searchController,
-            decoration: const InputDecoration.collapsed(
+            decoration: InputDecoration.collapsed(
               hintText: 'Search',
               hintStyle: TextStyle(fontSize: 20, color: Colors.grey,),
             ),
             keyboardType: TextInputType.text,
             onChanged: (String string) {
-              searchItem.clear();
+              Searchitem.clear();
               FirebaseApi.searchUsers(searchController.text).forEach((element) {
-                searchItem.clear();
+                //Searchitem.clear();
                 for (int i = 0; i < element.length; i++) {
                   Map<String, dynamic>Da = element[i].toJson();
                   String name = Da['name'];
                   DateTime time = Da['lastMessageTime'];
                   String avatar = Da['urlAvatar'];
                   setState(() {
-                    searchItem.add(
+                    Searchitem.add(
                         SearchModel(Sname: name, Stime: time, Savatar: avatar));
                   });
                 }
@@ -64,14 +64,14 @@ class _SearchScreen extends State<SearchScreen> {
                 setState(() {
                   empty = false;
                 });
-              } else {
+              } else
                 setState(() {
                   empty = true;
-                  searchItem.clear();
+                  Searchitem.clear();
                 });
-              }
             }),
         actions: Actions());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +95,7 @@ class _SearchScreen extends State<SearchScreen> {
                 builder: (context,snapshot){
                   switch(snapshot.connectionState){
                     case ConnectionState.waiting:
-                      return const Center(child: CircularProgressIndicator());
+                      return Center(child: CircularProgressIndicator());
                     default:
                       if(snapshot.hasError){
                         print(snapshot.error);
@@ -117,7 +117,7 @@ class _SearchScreen extends State<SearchScreen> {
                                     isMe=false;
                                   }
                                   return !isMe?Padding(
-                                      padding: const EdgeInsets.all(10),
+                                      padding: const EdgeInsets.all(10.0),
                                       child: Container(
                                         width: 50,
                                         child: Column(
@@ -130,27 +130,27 @@ class _SearchScreen extends State<SearchScreen> {
                                               )
                                               ,
                                               Text(item[i].name,style: const TextStyle(fontSize: 15),overflow: TextOverflow.clip,softWrap: false,),]),
-                                      )):const Divider(height: 0,thickness: 0,color: Colors.transparent,);
+                                      )):Divider(height: 0,thickness: 0,color: Colors.transparent,);
                                 } else {
                                   return  ListTile(
                                     leading: CircleAvatar(
                                       radius: 28,
-                                      backgroundImage: NetworkImage(searchItem[i].Savatar),
+                                      backgroundImage: NetworkImage(Searchitem[i].Savatar),
                                     ),
                                     title: Text(
-                                      searchItem[i].Sname,
-                                      style: const TextStyle(fontWeight: FontWeight.bold),
+                                      Searchitem[i].Sname,
+                                      style: TextStyle(fontWeight: FontWeight.bold),
                                     ),
-                                    subtitle: Text( searchItem[i].Stime.toString()),
+                                    subtitle: Text( Searchitem[i].Stime.toString()),
                                     onTap: (){Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ChatScreen(user: item[i])));},
                                   );
                                 }
                               },
                               separatorBuilder: (context, i) {
                                 if (empty) {
-                                  return const Divider();
+                                  return Divider();
                                 } else {
-                                  return const Divider(
+                                  return Divider(
                                     thickness: 1,
                                     indent: 85,
                                     color: Colors.black,
@@ -175,6 +175,6 @@ class SearchModel{
 Widget buildText(String text) => Center(
   child: Text(
     text,
-    style: const TextStyle(fontSize: 24, color: Colors.white),
+    style: TextStyle(fontSize: 24, color: Colors.white),
   ),
 );

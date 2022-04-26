@@ -1,4 +1,4 @@
-// Napoleon
-String myId = 'zLpBBpl3gvMi5pT8PTGn';
-String myUsername = 'Tim White';
-String myUrlAvatar = 'https://images.unsplash.com/photo-1519058082700-08a0b56da9b4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80';
+// Obama
+String myId = 'NHPI2bHZ8i6T6dpHsOib';
+String myUsername = 'Barack Obama';
+String myUrlAvatar = 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/President_Barack_Obama.jpg/480px-President_Barack_Obama.jpg';

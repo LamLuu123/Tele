@@ -5,6 +5,7 @@ import '../utils.dart';
 class MessageField {
   static final String createdAt = 'createdAt';
 }
+
 class Message {
   final String idUser;
   final String urlAvatar;

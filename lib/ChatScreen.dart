@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'Database.dart';
 import 'Home.dart';
 import 'data.dart';
@@ -6,7 +7,7 @@ import 'message.dart';
 import 'user.dart';
 
 class ChatScreen extends StatefulWidget {
-  static const String id = 'chat_screen';
+  static const id = 'chat_screen';
   final User user;
   const ChatScreen({@required this.user,Key key}):super(key: key);
   @override
@@ -15,19 +16,19 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _messageController = TextEditingController();
-  final FocusNode _messageFocusNode = FocusNode();
+  final _messageFocusNode = FocusNode();
   bool _messageEmpty=true;
   String Messages='';
   void sendMess()async{
     FocusScope.of(context).unfocus();
-    await FirebaseApi.uploadMessage(widget.user.idUser,myId,Messages);
     _messageController.clear();
     setState(() {
       _messageEmpty=true;
     });
+    await FirebaseApi.uploadMessage(widget.user.idUser,myId,Messages);
   }
   Widget _buildComposer() => Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.grey,
       ),
       child: Row(
@@ -40,7 +41,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 textCapitalization: TextCapitalization.sentences,
                 controller: _messageController,
                 focusNode: _messageFocusNode,
-                decoration: const InputDecoration.collapsed(
+                decoration: InputDecoration.collapsed(
                   hintText: 'Your message here...',
                 ),
                 onChanged: (value) {
@@ -48,9 +49,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     Messages=value;
                     if(_messageController.text!=''){
                       _messageEmpty=false;
-                    }else {
-                      _messageEmpty=true;
-                    }
+                    }else _messageEmpty=true;
                   });
                 },
               ),
@@ -60,12 +59,12 @@ class _ChatScreenState extends State<ChatScreen> {
           if(_messageEmpty)IconButton(
             onPressed: () {
             },
-            icon: const Icon(Icons.attachment_rounded),
+            icon: Icon(Icons.attachment_rounded),
           ),
-          if (_messageEmpty) IconButton(
+          _messageEmpty?IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.mic_none),
-          ) else IconButton(onPressed: Messages.trim().isEmpty?null: sendMess, icon: Icon(Icons.send))
+            icon: Icon(Icons.mic_none),
+          ):IconButton(onPressed: Messages.trim().isEmpty?null: sendMess, icon: Icon(Icons.send))
         ],
       ),
     );
@@ -76,14 +75,65 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Scaffold(
             appBar: AppBar(
               leading: IconButton(onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (BuildContext contxet) => Home()));}, icon: Icon(Icons.arrow_back)),
-              title: Text(widget.user.name),
+              title: Row( children: <Widget>[
+                 Flexible(
+                   child:
+                     CircleAvatar(
+                      backgroundImage: NetworkImage(widget.user.urlAvatar),
+                      radius: 20,
+                ),
+                 ),
+                 Flexible(child: Text(" "+widget.user.name,softWrap: false,overflow: TextOverflow.clip,)),],
+                //subtitle: Text('online',style: TextStyle(fontSize: 8)),
+              ),
               actions: <Widget>[
                 IconButton(onPressed: () {}, icon: Icon(Icons.call)),
-                IconButton(onPressed: () {}, icon: Icon(Icons.more_vert_outlined)),
+                PopupMenuButton(
+                  icon: Icon(Icons.more_vert_outlined),
+                      itemBuilder: (context)=>[
+                        PopupMenuItem(
+                          child: ListTile(
+                            leading: Icon(Icons.videocam_outlined),
+                            title: Text('Video Call'),
+                          ),
+                        ),
+                        PopupMenuItem(
+                          child: ListTile(
+                            leading: Icon(Icons.search),
+                            title: Text('Search'),
+                          ),
+                        ),
+                        PopupMenuItem(
+                          child: ListTile(
+                            leading: Icon(Icons.color_lens_sharp),
+                            title: Text('Change color'),
+                          ),
+                        ),
+                        PopupMenuItem(
+                          child: ListTile(
+                            leading: Icon(Icons.brush),
+                            title: Text('Clear history'),
+                          ),
+                        ),
+                        PopupMenuItem(
+                          child: ListTile(
+                            leading: Icon(Icons.volume_off_outlined),
+                            title: Text('Mute notifications'),
+                          ),
+                        ),
+                        PopupMenuItem(
+                          child: ListTile(
+                            leading: Icon(Icons.delete_outline),
+                            title: Text('Delete chat'),
+                          ),
+                        ),
+                      ],
+                  color: Colors.blueGrey,
+                ),
               ],
             ),
             body: Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 image: DecorationImage(image: AssetImage("assets/back.png"), fit: BoxFit.cover),
               ),
               child: SafeArea(
@@ -104,7 +154,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               if (messages?.isEmpty??true) {
                                 return const Center(
                                 child: Text(
-                                  'Say Hi...',
+                                  "Say Hi...",
                                   style: TextStyle(fontSize: 24, color: Colors.black),
                                 ),
                               );
@@ -118,14 +168,12 @@ class _ChatScreenState extends State<ChatScreen> {
                                   if(messages[index].idUser == myId){
                                     isMe=true;
                                   }
-                                  else {
-                                    isMe=false;
-                                  }
+                                  else isMe=false;
                                   final message = messages[index];
                                   final radius = Radius.circular(20);
                                   final borderRadius = BorderRadius.all(radius);
                                   return Row(
-                                    mainAxisAlignment: isMe
+                                    mainAxisAlignment: (isMe)
                                         ? MainAxisAlignment.end
                                         : MainAxisAlignment.start,
                                     children: <Widget>[
@@ -135,17 +183,17 @@ class _ChatScreenState extends State<ChatScreen> {
                                             backgroundImage: NetworkImage(
                                                 message.urlAvatar)),
                                       Container(
-                                        padding: const EdgeInsets.all(16),
-                                        margin: const EdgeInsets.all(2),
-                                        constraints: const BoxConstraints(
+                                        padding: EdgeInsets.all(16),
+                                        margin: EdgeInsets.all(2),
+                                        constraints: BoxConstraints(
                                             maxWidth: 140),
                                         decoration: BoxDecoration(
-                                          color: isMe
+                                          color: (isMe)
                                               ? Colors.pink[100]
                                               : Theme
                                               .of(context)
                                               .accentColor,
-                                          borderRadius: isMe
+                                          borderRadius: (isMe)
                                               ? borderRadius.subtract(
                                               BorderRadius.only(
                                                   bottomRight: radius))
@@ -173,7 +221,7 @@ class _ChatScreenState extends State<ChatScreen> {
 Widget buildText(String text) => Center(
   child: Text(
     text,
-    style: const TextStyle(fontSize: 24, color: Colors.white),
+    style: TextStyle(fontSize: 24, color: Colors.white),
   ),
 );
 Widget buildMessage(Message message){
@@ -181,17 +229,15 @@ Widget buildMessage(Message message){
   if(message.idUser==myId){
     isMe=true;
   }
-  else {
-    isMe=false;
-  }
+  else isMe=false;
   return Column(
   crossAxisAlignment:
-  isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+  (isMe) ? CrossAxisAlignment.end : CrossAxisAlignment.start,
   children: <Widget>[
     Text(
       message.message,
-      style: TextStyle(color: isMe ? Colors.black : Colors.white),
-      textAlign: isMe ? TextAlign.end : TextAlign.start,
+      style: TextStyle(color: (isMe) ? Colors.black : Colors.white),
+      textAlign: (isMe) ? TextAlign.end : TextAlign.start,
     ),
   ],
 );

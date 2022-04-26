@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'Dialog.dart';
+import 'data.dart';
+
 class Account {
   final String titles;
   final String subtitles;
@@ -10,7 +13,7 @@ class Account {
 final List<Account> accountItem = [
   Account(titles: 'Account', subtitles: ''),
   Account(titles: '+84383765687', subtitles: 'Tap to change phone number', ontap: () {}),
-  Account(titles: 'None', subtitles: 'Username', ontap: () {}),
+  Account(titles: '$myUsername', subtitles: 'Username', ontap: () {}),
   Account(titles: 'Bio', subtitles: 'Add a few word about yourself', ontap: () {})
 ];
 

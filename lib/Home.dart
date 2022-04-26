@@ -6,6 +6,7 @@ import 'Database.dart';
 import 'DrawerScreen.dart';
 import 'SearchScreen.dart';
 import 'data.dart';
+import 'newMess.dart';
 import 'user.dart';
 
 class Home extends StatefulWidget {
@@ -18,14 +19,14 @@ class _Home extends State<Home> {
         data: ThemeData.dark(),
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Telegram'),
+            title: const Text("Telegram"),
             actions: <Widget>[
               Padding(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10.0),
                 child: IconButton(
                     icon: const Icon(Icons.search),
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => const SearchScreen()));
+                      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => SearchScreen()));
                     }),
               )
             ],
@@ -34,7 +35,7 @@ class _Home extends State<Home> {
           body: SafeArea(
             child: StreamBuilder<List<User>>(
               stream: FirebaseApi.getUsers(),
-              builder: (BuildContext context,AsyncSnapshot<List<User>> snapshot){
+              builder: (context,snapshot){
                 switch (snapshot.connectionState) {
                   //case ConnectionState.waiting:
                      //return Center(child: CircularProgressIndicator());
@@ -44,21 +45,23 @@ class _Home extends State<Home> {
                      return buildText('Something Went Wrong Try later');
                      }
                  else {
-                  final List<User> items = snapshot.data;
+                  final items = snapshot.data;
 
                   if (items?.isEmpty??true) {
                     return buildText('No Users Found');
                   } else {
                     return ListView.separated(
                       physics: const BouncingScrollPhysics(),
-                      itemBuilder: (BuildContext context, int i) {
+                      itemBuilder: (context, i) {
                         bool isMe;
                         if (i >= items.length) {
                           if (i == items.length) {
                               return const ListTile(
                                 title: Text(
                                   'Your contact on Telegram',
-                                  style: TextStyle(color: Color.fromRGBO(0, 0, 255, 0.8), fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                      color: Color.fromRGBO(0, 0, 255, 0.8),
+                                      fontWeight: FontWeight.bold),
                                 ),
                               );
                           } else {
@@ -80,17 +83,15 @@ class _Home extends State<Home> {
                                 onTap: (){
                                   Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ChatScreen(user: items[i - items.length - 1])));
                                 }
-                            ):const Divider(height: 0,thickness: 0,color: Colors.transparent,);
+                            ):Divider(height: 0,thickness: 0,color: Colors.transparent,);
                           }
                         } else {
-                          //GetLast(items[i].idUser,lastMess);
-
-                          //print(lastMess.LastMess);
                         if(items[i].idUser==myId){
                         isMe=true;
                         }else {
                         isMe=false;
                         }
+
                           return !isMe?ListTile(
                             leading: CircleAvatar(
                               radius: 28,
@@ -100,15 +101,18 @@ class _Home extends State<Home> {
                               items[i].name,
                               style: const TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            subtitle: items[i].LastMess.isNotEmpty?Text(items[i].LastMess):const Text(''),
-                            trailing: Text(DateFormat.Hm().format(items[i].lastMessageTime)),
+                            subtitle: items[i].LastMess.isNotEmpty?Text(items[i]
+                                .LastMess):const Text(''),
+                            trailing: Text(DateFormat.Hm()
+                                .format(items[i].lastMessageTime)),
                             onTap: (){
                               Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => ChatScreen(user: items[i])));
                             },
-                          ):const Divider(height: 0,thickness: 0,color: Colors.transparent,);
+                          ):const Divider(
+                            height: 0,thickness: 0,color: Colors.transparent,);
                         }
                       },
-                      separatorBuilder: (BuildContext context, int i) {
+                      separatorBuilder: (context, i) {
                         bool isMe;
                         if (i >= items.length - 1) {
                           if (i == items.length - 1) {
@@ -134,7 +138,8 @@ class _Home extends State<Home> {
                             thickness: 1,
                             indent: 85,
                             color: Colors.black,
-                          ):const Divider(height: 0,thickness: 0,color: Colors.transparent,);
+                          ):const Divider(
+                            height: 0,thickness: 0,color: Colors.transparent,);
                         }
                       },
                       itemCount: items.length * 2 +1,
@@ -145,12 +150,12 @@ class _Home extends State<Home> {
               }),
           ),
           floatingActionButton: FloatingActionButton(
-            backgroundColor: Color.fromRGBO(0, 0, 255, 0.8),
-            onPressed: () {},
-            child: const Icon(
+            child: Icon(
               Icons.create,
               color: Colors.white,
             ),
+            backgroundColor: Color.fromRGBO(0, 0, 255, 0.8),
+            onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => newMess()));},
           ),
         ));
 
@@ -158,6 +163,6 @@ class _Home extends State<Home> {
   Widget buildText(String text) => Center(
     child: Text(
       text,
-      style: const TextStyle(fontSize: 24, color: Colors.white),
+      style: TextStyle(fontSize: 24, color: Colors.white),
     ),
   );

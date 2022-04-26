@@ -1,5 +1,8 @@
+import 'package:confirm_dialog/confirm_dialog.dart';
 import 'package:flutter/material.dart';
+import 'Dialog.dart';
 import 'SettingItem.dart';
+import 'data.dart';
 
 class SettingScreen extends StatefulWidget {
   @override
@@ -7,6 +10,9 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreen extends State<SettingScreen> {
+  String phone =accountItem[1].titles;
+  String name =accountItem[2].titles;
+  String bio =accountItem[3].titles;
   @override
   Widget build(BuildContext context) => Theme(
         data: ThemeData.dark(),
@@ -15,19 +21,18 @@ class _SettingScreen extends State<SettingScreen> {
               slivers: <Widget>[
                 SliverAppBar(
                   pinned: true,
-                  flexibleSpace: const FlexibleSpaceBar(
-                    titlePadding: EdgeInsets.fromLTRB(30,20,0,0),
-                      centerTitle: true,
-                      title:  ListTile(
-                        leading: CircleAvatar(
-                          backgroundImage: AssetImage(""),
-                          radius: 15,
-                        ),
-                        title: Text('Luu Van Lam',style: TextStyle(fontSize: 12),),
-                        subtitle: Text('online',style: TextStyle(fontSize: 8)),
-                      ),
-                  ), //FlexibleSpaceBar
-                  expandedHeight: 100, //IconButton
+                  title: Padding(
+                    padding: const EdgeInsets.all(1),
+                    child: Row(children:<Widget>[
+                      CircleAvatar(backgroundImage: NetworkImage(myUrlAvatar),
+                        radius: 15,),
+                      Expanded(
+                        child: ListTile(title: Text('Barack Obama',style: TextStyle(fontSize: 16),textAlign: TextAlign.left,overflow: TextOverflow.clip,),
+                          subtitle: Text('online',style: TextStyle(fontSize: 10),),),
+            )
+          ]),
+        ),
+                  //), //FlexibleSpaceBar//IconButton
                   actions: <Widget>[
                     IconButton(
                       icon: Icon(Icons.search),
@@ -52,12 +57,46 @@ class _SettingScreen extends State<SettingScreen> {
                               ),
                             );
                           }
+                          if(index==1){
                           return ListTile(
-                      title: Text(accountItem[index].titles,//TextStyle
+                            title: Text(phone,//TextStyle
                         ),
                           subtitle:Text(accountItem[index].subtitles ,//Text//Center
-                    ),
-                        );},//ListTile
+                          ),
+                            onTap: ()=>PhoneDialog(context, accountItem[index].titles).then((value){
+                              if(value!=null){
+                              setState(() {
+                                phone="+84"+value;
+                              });}
+                            }),
+                        );}
+                          if(index==2){
+                            return ListTile(
+                              title: Text(name,//TextStyle
+                              ),
+                              subtitle:Text(accountItem[index].subtitles ,//Text//Center
+                              ),
+                              onTap: ()=>NameDialog(context, accountItem[index].titles).then((value){
+                                if(value!=null){
+                                  setState(() {
+                                    name=value;
+                                    myUsername=value;
+                                  });}
+                              }),
+                            );}
+                          if(index==3){
+                            return ListTile(
+                              title: Text(bio,//TextStyle
+                              ),
+                              subtitle:Text(accountItem[index].subtitles ,//Text//Center
+                              ),
+                              onTap: ()=>BioDialog(context, accountItem[index].titles).then((value){
+                                if(value!=null){
+                                  setState(() {
+                                    bio=value;
+                                  });}
+                              }),
+                            );}return Divider();},//ListTile
                     childCount: accountItem.length,
                   ), //SliverChildBuildDelegate
                 ),
@@ -98,7 +137,10 @@ class _SettingScreen extends State<SettingScreen> {
                     ); },//ListTile
                     childCount: helpItem.length,
                   ), //SliverChildBuildDelegate
-                )//SliverList
+                ),
+                SliverToBoxAdapter()//SliverList
               ], //<Widget>[]
-            )));
+            )
+
+        ));
 }

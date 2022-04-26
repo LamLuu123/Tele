@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'Home.dart';
-
+import 'package:tele/Singin.dart';
 class Start extends StatefulWidget {
   @override
   _StartScreen createState() => _StartScreen();
@@ -9,12 +9,12 @@ class Start extends StatefulWidget {
 class _StartScreen extends State<Start> {
   @override
   Widget build(BuildContext context) {
-    final _button = ElevatedButton(
+    ElevatedButton _button = ElevatedButton(
         onPressed: () {
           Navigator.push(
             context,
             PageRouteBuilder(
-              pageBuilder: (c, a1, a2) => Home(),
+              pageBuilder: (c, a1, a2) => Singin(),
               transitionsBuilder: (c, anim, a2, child) => SlideTransition(
                   position: Tween<Offset>(
                     begin: const Offset(1.0, 0.0),
@@ -24,28 +24,28 @@ class _StartScreen extends State<Start> {
                     curve: Curves.easeOut,
                   )),
                   child: child),
-              transitionDuration: const Duration(milliseconds: 2000),
+              transitionDuration: Duration(milliseconds: 2000),
               //transitionDuration: Duration(milliseconds: 2000),
             ),
           );
         },
         style: ElevatedButton.styleFrom(
-          textStyle: const TextStyle(
+          textStyle: TextStyle(
             fontSize: 20,
             color: Color.fromRGBO(255, 255, 255, 1),
           ),
-          primary: const Color.fromRGBO(0, 0, 255, 0.8),
+          primary: Color.fromRGBO(0, 0, 255, 0.8),
         ),
         child: const Text(
           'Start Messaging',
         ));
-    final box = SizedBox(height: 50, width: 200, child: _button);
+    SizedBox box = new SizedBox(height: 50, width: 200, child: _button);
     return Scaffold(
         backgroundColor: Colors.black,
         body: Center(
             child: Stack(
               children: <Widget>[
-                Positioned(
+                new Positioned(
                   bottom: 80,
                   left: MediaQuery.of(context).size.width * 0.5 - box.width * 0.5,
                   child: ClipRRect(
