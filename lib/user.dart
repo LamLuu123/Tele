@@ -13,6 +13,8 @@ class User {
   final String urlAvatar;
   final String LastMess;
   final DateTime lastMessageTime;
+  final String Bio;
+  final String Phone;
 
   const User({
     this.idUser,
@@ -20,6 +22,8 @@ class User {
     @required this.urlAvatar,
     @required this.lastMessageTime,
     @required this.LastMess,
+    @required this.Bio,
+    @required this.Phone,
   });
 
   User copyWith({
@@ -28,6 +32,8 @@ class User {
     String urlAvatar,
     String LastMess,
     String lastMessageTime,
+    String Bio,
+    String Phone,
   }) =>
       User(
         idUser: idUser ?? this.idUser,
@@ -35,6 +41,8 @@ class User {
         urlAvatar: urlAvatar ?? this.urlAvatar,
         lastMessageTime: lastMessageTime ?? this.lastMessageTime,
         LastMess: LastMess??this.LastMess,
+        Bio: Bio??this.Bio,
+        Phone: Phone??this.Phone
       );
 
   static User fromJson(Map<String, dynamic> json) => User(
@@ -43,6 +51,8 @@ class User {
     urlAvatar: json['urlAvatar'],
     lastMessageTime: Utils.toDateTime(json['lastMessageTime']),
     LastMess: json['LastMess'],
+    Bio: json['bio'],
+      Phone: json['phone'],
   );
 
   Map<String, dynamic> toJson() => {
@@ -51,5 +61,7 @@ class User {
     'urlAvatar': urlAvatar,
     'lastMessageTime': Utils.fromDateTimeToJson(lastMessageTime),
     'LastMess':LastMess,
+    'bio': Bio,
+    'phone':Phone,
   };
 }

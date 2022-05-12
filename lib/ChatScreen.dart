@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'Database.dart';
@@ -15,17 +18,67 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  bool isLoading = false;
+  ScrollController _chatScrollController;
+  int loadMoreMsgs = 20; // at first it will load only 20
+  int a = 50;
   final TextEditingController _messageController = TextEditingController();
   final _messageFocusNode = FocusNode();
   bool _messageEmpty=true;
   String Messages='';
+  @override
+  void initState() {
+    _chatScrollController = ScrollController()
+      ..addListener(() async {
+        if (_chatScrollController.position.atEdge) {
+          if (_chatScrollController.position.pixels == 0){
+            setState(() {
+              isLoading = false;
+            });
+            //print('ListView scrolled to top');
+          }
+          else {
+
+            if (!isLoading) {
+              setState(() {
+                isLoading = true;
+              });
+            }
+            await FirebaseApi.getMessagesLeng(widget.user.idUser,account.idUser).
+              forEach((element) {
+              setState(() {
+                if(loadMoreMsgs<element.length) {
+                  loadMoreMsgs =  loadMoreMsgs + a;
+                  //print('ListView scrolled to bottom '+loadMoreMsgs.toString()+ isLoading.toString());
+                }else{
+                  isLoading = false;
+                  //print('ListView scrolled to bottom '+loadMoreMsgs.toString()+ isLoading.toString());
+                }
+              });
+            });
+             // }
+            //print('ListView scrolled to bottom '+loadMoreMsgs.toString()+ isLoading.toString());
+          }
+        }
+      });
+    // TODO: implement initState
+    super.initState();
+  }
+  @override
+  void dispose() {
+    _chatScrollController.dispose();
+    _messageController.dispose();
+    _messageFocusNode.dispose();
+    // TODO: implement dispose
+    super.dispose();
+  }
   void sendMess()async{
     FocusScope.of(context).unfocus();
     _messageController.clear();
     setState(() {
       _messageEmpty=true;
     });
-    await FirebaseApi.uploadMessage(widget.user.idUser,myId,Messages);
+    await FirebaseApi.uploadMessage(widget.user.idUser,account.idUser,Messages);
   }
   Widget _buildComposer() => Container(
       decoration: BoxDecoration(
@@ -68,6 +121,18 @@ class _ChatScreenState extends State<ChatScreen> {
         ],
       ),
     );
+
+    Widget _buildProgressIndicator() {
+      return new Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: new Center(
+          child: new Opacity(
+            opacity:1.0,
+            child: new CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
 
   @override
   Widget build(BuildContext context) => Theme(
@@ -140,7 +205,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 child:Column(children: <Widget>[
                   Expanded(
                   child: StreamBuilder<List<Message>>(
-                      stream: FirebaseApi.getMessages(widget.user.idUser,myId),
+                      stream: FirebaseApi.getMessages(widget.user.idUser,account.idUser,loadMoreMsgs),
                       builder: (context, snapshot) {
                         switch (snapshot.connectionState) {
                         //case ConnectionState.waiting:
@@ -160,19 +225,19 @@ class _ChatScreenState extends State<ChatScreen> {
                               );
                               } else {
                                 return ListView.builder(
-                                physics: BouncingScrollPhysics(),
+                                  controller:_chatScrollController,
+                                physics: ClampingScrollPhysics(),
                                 reverse: true,
                                 itemCount: messages.length,
                                 itemBuilder: (context, index) {
                                   bool isMe=false;
-                                  if(messages[index].idUser == myId){
+                                  if(messages[index].idUser == account.idUser){
                                     isMe=true;
-                                  }
-                                  else isMe=false;
+                                  }else isMe=false;
                                   final message = messages[index];
                                   final radius = Radius.circular(20);
                                   final borderRadius = BorderRadius.all(radius);
-                                  return Row(
+                                  return (index==messages.length-1&&isLoading)? _buildProgressIndicator() : Row(
                                     mainAxisAlignment: (isMe)
                                         ? MainAxisAlignment.end
                                         : MainAxisAlignment.start,
@@ -226,7 +291,7 @@ Widget buildText(String text) => Center(
 );
 Widget buildMessage(Message message){
   bool isMe;
-  if(message.idUser==myId){
+  if(message.idUser==account.idUser){
     isMe=true;
   }
   else isMe=false;
@@ -237,7 +302,7 @@ Widget buildMessage(Message message){
     Text(
       message.message,
       style: TextStyle(color: (isMe) ? Colors.black : Colors.white),
-      textAlign: (isMe) ? TextAlign.end : TextAlign.start,
+      textAlign: TextAlign.start,
     ),
   ],
 );

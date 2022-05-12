@@ -11,8 +11,58 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreen extends State<SearchScreen> {
+  bool isLoading = false;
+  ScrollController _chatScrollController;
+  int loadMoreMsgs = 10; // at first it will load only 10
+  int a = 20;
   TextEditingController searchController = TextEditingController();
   bool empty = true;
+  void initState() {
+    if(!empty){
+    _chatScrollController = ScrollController()
+      ..addListener(() async {
+        if (_chatScrollController.position.atEdge) {
+          if (_chatScrollController.position.pixels == 0){
+            setState(() {
+              isLoading = false;
+            });
+            //print('ListView scrolled to top');
+          }
+          else {
+
+            if (!isLoading) {
+              setState(() {
+                isLoading = true;
+              });
+            }
+            await FirebaseApi.getSaveMessagesLeng(account.idUser).
+            forEach((element) {
+              setState(() {
+                if(loadMoreMsgs<element.length) {
+                  loadMoreMsgs =  loadMoreMsgs + a;
+                  //print('ListView scrolled to bottom '+loadMoreMsgs.toString()+ isLoading.toString());
+                }else{
+                  isLoading = false;
+                  //print('ListView scrolled to bottom '+loadMoreMsgs.toString()+ isLoading.toString());
+                }
+              });
+            });
+            // }
+            //print('ListView scrolled to bottom '+loadMoreMsgs.toString()+ isLoading.toString());
+          }
+        }
+      });}
+    // TODO: implement initState
+    super.initState();
+  }
+  @override
+  void dispose() {
+    if(!empty){
+    //_chatScrollController.dispose();
+    searchController.dispose();}
+    // TODO: implement dispose
+    super.dispose();
+  }
   Actions() {
     if (!empty) {
       return <Widget>[
@@ -72,7 +122,17 @@ class _SearchScreen extends State<SearchScreen> {
             }),
         actions: Actions());
   }
-
+  Widget _buildProgressIndicator() {
+    return new Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: new Center(
+        child: new Opacity(
+          opacity:1.0,
+          child: new CircularProgressIndicator(),
+        ),
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     Axis Scroll = Axis.horizontal;
@@ -107,11 +167,12 @@ class _SearchScreen extends State<SearchScreen> {
                           return buildText('No Users Found');
                         }else{
                           return ListView.separated(
+                            controller: _chatScrollController,
                               scrollDirection: Scroll,
                               itemBuilder: (context, i) {
                                 if (empty) {
                                   bool isMe;
-                                  if(item[i].idUser==myId){
+                                  if(item[i].idUser==account.idUser){
                                     isMe=true;
                                   }else {
                                     isMe=false;
@@ -132,7 +193,7 @@ class _SearchScreen extends State<SearchScreen> {
                                               Text(item[i].name,style: const TextStyle(fontSize: 15),overflow: TextOverflow.clip,softWrap: false,),]),
                                       )):Divider(height: 0,thickness: 0,color: Colors.transparent,);
                                 } else {
-                                  return  ListTile(
+                                  return  (i==item.length-1&&isLoading)? _buildProgressIndicator() :ListTile(
                                     leading: CircleAvatar(
                                       radius: 28,
                                       backgroundImage: NetworkImage(Searchitem[i].Savatar),

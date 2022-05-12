@@ -3,6 +3,7 @@ Future<String> PhoneDialog(
   BuildContext context,
   String phone1
 )async => await showDialog(context: context, builder: (BuildContext ctx){
+  final _formKey = GlobalKey<FormState>();
     String phone= phone1;
     return StatefulBuilder(builder: (BuildContext ctx, StateSetter setState){
       return SimpleDialog(
@@ -12,16 +13,26 @@ Future<String> PhoneDialog(
         title: Text('Phone change'),
         children: <Widget>[
           Padding(padding: EdgeInsets.all(8),
-          child:TextFormField(
-            decoration: InputDecoration(
-              labelText: 'Phone number',
-              hintText: 'Enter phone number',focusedErrorBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.red), borderRadius: BorderRadius.circular(10)),
-              errorBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.red), borderRadius: BorderRadius.circular(10)),
-              enabledBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.white), borderRadius: BorderRadius.circular(10)),
-              focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.white), borderRadius: BorderRadius.circular(10)),
-            ),
-            onChanged: (value)=>setState(()=>phone=value),
-          ),),Align(
+          child:Form(key:_formKey,child: TextFormField(
+          decoration: InputDecoration(
+          labelText: 'Phone number',
+          hintText: 'Enter phone number',focusedErrorBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.red), borderRadius: BorderRadius.circular(10)),
+          errorBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.red), borderRadius: BorderRadius.circular(10)),
+          enabledBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.white), borderRadius: BorderRadius.circular(10)),
+      focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.white), borderRadius: BorderRadius.circular(10)),
+      ),
+      maxLength: 10,
+      validator: (value) {
+      if(value.isEmpty) {
+      return 'Enter Phone number';
+      }
+      if(value.length<10||!RegExp(r'^[0-9]+$').hasMatch(value)){
+      return 'Invalid Phone number';
+      }
+      return null;
+      },
+      onChanged: (value)=>setState(()=>phone=value),
+      ),),),Align(
             alignment: Alignment.bottomRight,
             child:Padding(
               padding: const EdgeInsets.all(8.0),
@@ -35,7 +46,7 @@ Future<String> PhoneDialog(
                       onTap: (){Navigator.of(context,rootNavigator: true).pop(null);},
                       child: Text("Cancel",style: TextStyle(color: Colors.red),),
                     ),SizedBox(width: 10,),GestureDetector(
-                      onTap: (){Navigator.of(context,rootNavigator: true).pop(phone);},
+                      onTap: (){if(_formKey.currentState.validate()){Navigator.of(context,rootNavigator: true).pop(phone);}},
                       child: Text("Apply",style: TextStyle(color: Colors.blue),),
                     ),
                   ],

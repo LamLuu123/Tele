@@ -10,11 +10,11 @@ class Account {
   Account({this.titles, this.subtitles, this.ontap});
 }
 
-final List<Account> accountItem = [
-  Account(titles: 'Account', subtitles: ''),
-  Account(titles: '+84383765687', subtitles: 'Tap to change phone number', ontap: () {}),
-  Account(titles: '$myUsername', subtitles: 'Username', ontap: () {}),
-  Account(titles: 'Bio', subtitles: 'Add a few word about yourself', ontap: () {})
+List<Account> accountItem = [
+Account(titles: 'Account', subtitles: ''),
+Account(titles: "+"+account.Phone, subtitles: 'Tap to change phone number', ontap: () {}),
+Account(titles: account.name, subtitles: 'Username', ontap: () {}),
+Account(titles: account.Bio, subtitles: 'Add a few word about yourself', ontap: () {})
 ];
 
 class Setting {

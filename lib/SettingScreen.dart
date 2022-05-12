@@ -1,6 +1,8 @@
 import 'package:confirm_dialog/confirm_dialog.dart';
 import 'package:flutter/material.dart';
+import 'Database.dart';
 import 'Dialog.dart';
+import 'Home.dart';
 import 'SettingItem.dart';
 import 'data.dart';
 
@@ -10,24 +12,73 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreen extends State<SettingScreen> {
-  String phone =accountItem[1].titles;
-  String name =accountItem[2].titles;
-  String bio =accountItem[3].titles;
+  void getAcc(String id) async {
+    await FirebaseApi.upDateAcc(id).then((value){
+      String idUser;
+      String name;
+      String urlAvatar;
+      String Bio;
+      String Phone;
+      value.docs.first.data().forEach((key, value) {
+        switch(key){
+          case "name":
+            name=value;
+            break;
+          case "idUser":
+            idUser=value;
+            break;
+          case "urlAvatar":
+            urlAvatar=value;
+            break;
+          case "bio":
+            Bio=value;
+            break;
+          case "phone":
+            Phone=value;
+            break;
+        }
+      });
+      account.setName(name);
+      account.setPhone(Phone);
+      account.setBio(Bio);
+      accountItem = [
+        Account(titles: 'Account', subtitles: ''),
+        Account(titles: "+"+account.Phone, subtitles: 'Tap to change phone number', ontap: () {}),
+        Account(titles: account.name, subtitles: 'Username', ontap: () {}),
+        Account(titles: account.Bio, subtitles: 'Add a few word about yourself', ontap: () {})
+      ];
+    });
+    print(account.Phone.toString());
+    print(account.Bio.toString());
+    print(account.name.toString());
+  }
   @override
-  Widget build(BuildContext context) => Theme(
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    //getAcc(account.idUser);
+  }
+  @override
+  Widget build(BuildContext context) {
+    getAcc(account.idUser);
+    String phone=accountItem[1].titles;
+    String bio=accountItem[3].titles;
+    String name=accountItem[2].titles;
+    return Theme(
         data: ThemeData.dark(),
         child: Scaffold(
             body: CustomScrollView(
               slivers: <Widget>[
                 SliverAppBar(
+                  leading: IconButton(onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (BuildContext contxet) => Home()));}, icon: Icon(Icons.arrow_back)),
                   pinned: true,
                   title: Padding(
                     padding: const EdgeInsets.all(1),
                     child: Row(children:<Widget>[
-                      CircleAvatar(backgroundImage: NetworkImage(myUrlAvatar),
+                      CircleAvatar(backgroundImage: NetworkImage(account.urlAvatar),
                         radius: 15,),
                       Expanded(
-                        child: ListTile(title: Text('Barack Obama',style: TextStyle(fontSize: 16),textAlign: TextAlign.left,overflow: TextOverflow.clip,),
+                        child: ListTile(title: Text(account.name,style: TextStyle(fontSize: 16),textAlign: TextAlign.left,overflow: TextOverflow.clip,),
                           subtitle: Text('online',style: TextStyle(fontSize: 10),),),
             )
           ]),
@@ -36,7 +87,7 @@ class _SettingScreen extends State<SettingScreen> {
                   actions: <Widget>[
                     IconButton(
                       icon: Icon(Icons.search),
-                      tooltip: 'Comment Icon',
+                     // tooltip: 'Comment Icon',
                       onPressed: () {},
                     ), //IconButton
                     IconButton(
@@ -59,28 +110,27 @@ class _SettingScreen extends State<SettingScreen> {
                           }
                           if(index==1){
                           return ListTile(
-                            title: Text(phone,//TextStyle
-                        ),
+                            title: Text(phone),
                           subtitle:Text(accountItem[index].subtitles ,//Text//Center
                           ),
                             onTap: ()=>PhoneDialog(context, accountItem[index].titles).then((value){
                               if(value!=null){
                               setState(() {
-                                phone="+84"+value;
+                                phone=value;
+                                account.upDatePhone(value);
                               });}
                             }),
                         );}
                           if(index==2){
                             return ListTile(
-                              title: Text(name,//TextStyle
-                              ),
+                              title: Text(name),
                               subtitle:Text(accountItem[index].subtitles ,//Text//Center
                               ),
                               onTap: ()=>NameDialog(context, accountItem[index].titles).then((value){
                                 if(value!=null){
                                   setState(() {
                                     name=value;
-                                    myUsername=value;
+                                    account.upDateName(value);
                                   });}
                               }),
                             );}
@@ -94,7 +144,13 @@ class _SettingScreen extends State<SettingScreen> {
                                 if(value!=null){
                                   setState(() {
                                     bio=value;
-                                  });}
+                                    account.upDateBio(value);
+                                  });}else{
+                                  setState(() {
+                                    bio="Bio";
+                                    account.upDateBio("Bio");
+                                  });
+                                }
                               }),
                             );}return Divider();},//ListTile
                     childCount: accountItem.length,
@@ -142,5 +198,5 @@ class _SettingScreen extends State<SettingScreen> {
               ], //<Widget>[]
             )
 
-        ));
+        ));}
 }

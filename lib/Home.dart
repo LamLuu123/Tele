@@ -14,8 +14,48 @@ class Home extends StatefulWidget {
   _Home createState() => _Home();
 }
 class _Home extends State<Home> {
+  void getAcc(String id) async {
+    await FirebaseApi.upDateAcc(id).then((value){
+      String idUser;
+      String name;
+      String urlAvatar;
+      String Bio;
+      String Phone;
+      value.docs.first.data().forEach((key, value) {
+        switch(key){
+          case "name":
+            name=value;
+            break;
+          case "idUser":
+            idUser=value;
+            break;
+          case "urlAvatar":
+            urlAvatar=value;
+            break;
+          case "bio":
+            Bio=value;
+            break;
+          case "phone":
+            Phone=value;
+            break;
+        }
+      });
+      account.setName(name);
+      account.setPhone(Phone);
+      account.setBio(Bio);
+
+    });
+    //print(account.Phone.toString());
+  }
   @override
-  Widget build(BuildContext context) => Theme(
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getAcc(account.idUser);
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Theme(
         data: ThemeData.dark(),
         child: Scaffold(
           appBar: AppBar(
@@ -65,7 +105,7 @@ class _Home extends State<Home> {
                                 ),
                               );
                           } else {
-                            if(items[i - items.length - 1].idUser==myId){
+                            if(items[i - items.length - 1].idUser==account.idUser){
                               isMe=true;
                             }else {
                               isMe=false;
@@ -86,7 +126,7 @@ class _Home extends State<Home> {
                             ):Divider(height: 0,thickness: 0,color: Colors.transparent,);
                           }
                         } else {
-                        if(items[i].idUser==myId){
+                        if(items[i].idUser==account.idUser){
                         isMe=true;
                         }else {
                         isMe=false;
@@ -128,7 +168,7 @@ class _Home extends State<Home> {
                             );
                           }
                         } else {
-                          if(items[i].idUser==myId){
+                          if(items[i].idUser==account.idUser){
                             isMe=true;
                           }else {
                             isMe=false;
@@ -157,7 +197,7 @@ class _Home extends State<Home> {
             backgroundColor: Color.fromRGBO(0, 0, 255, 0.8),
             onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => newMess()));},
           ),
-        ));
+        ));}
 
 }
   Widget buildText(String text) => Center(

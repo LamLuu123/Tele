@@ -4,6 +4,7 @@ import 'package:intl/date_symbol_data_local.dart';
 
 import 'Database.dart';
 import 'Start.dart';
+import 'signup.dart';
 import 'users.dart';
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();

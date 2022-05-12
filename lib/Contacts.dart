@@ -67,7 +67,7 @@ class _Contacts extends State<Contacts> {
                                   ),
                                 );
                               } else {
-                                if(items[i - 3].idUser==myId){
+                                if(items[i - 3].idUser==account.idUser){
                                   isMe=true;
                                 }else {
                                   isMe=false;
@@ -88,7 +88,7 @@ class _Contacts extends State<Contacts> {
                                 ):Divider(height: 0,thickness: 0,color: Colors.transparent,);
                               }
                             } else {
-                              if(items[i].idUser==myId){
+                              if(items[i].idUser==account.idUser){
                                 isMe=true;
                               }else {
                                 isMe=false;

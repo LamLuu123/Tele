@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'Contacts.dart';
+import 'Database.dart';
 import 'SavedMess.dart';
 import 'SettingScreen.dart';
 import 'data.dart';
@@ -10,8 +11,48 @@ class DrawerScreen extends StatefulWidget {
 }
 
 class _DrawerScreen extends State<DrawerScreen> {
+  void getAcc(String id) async {
+    await FirebaseApi.upDateAcc(id).then((value){
+      String idUser;
+      String name;
+      String urlAvatar;
+      String Bio;
+      String Phone;
+      value.docs.first.data().forEach((key, value) {
+        switch(key){
+          case "name":
+            name=value;
+            break;
+          case "idUser":
+            idUser=value;
+            break;
+          case "urlAvatar":
+            urlAvatar=value;
+            break;
+          case "bio":
+            Bio=value;
+            break;
+          case "phone":
+            Phone=value;
+            break;
+        }
+      });
+      account.setName(name);
+      account.setPhone(Phone);
+      account.setBio(Bio);
+
+    });
+    print(account.Phone.toString());
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getAcc(account.idUser);
+  }
   @override
   Widget build(BuildContext context) {
+    getAcc(account.idUser);
     return Theme(
         data: ThemeData.dark(),
         child: Drawer(
@@ -19,10 +60,10 @@ class _DrawerScreen extends State<DrawerScreen> {
             children: <Widget>[
               UserAccountsDrawerHeader(
                 decoration: BoxDecoration(color: Color.fromRGBO(0, 0, 0, 0.8)),
-                accountName: Text(myUsername),
-                accountEmail: Text('+0383765687'),
+                accountName: Text(account.name),
+                accountEmail: Text("+"+account.Phone),
                 currentAccountPicture: CircleAvatar(
-                  backgroundImage: NetworkImage(myUrlAvatar),
+                  backgroundImage: NetworkImage(account.urlAvatar),
                   backgroundColor: Colors.white,
                 ),
                 arrowColor: Color.fromRGBO(255, 255, 255, 1),
@@ -52,7 +93,7 @@ class _DrawerScreen extends State<DrawerScreen> {
               DrawerListTitle(
                 iconData: Icons.bookmark,
                 title: "Save Messages",
-                onTitlePressed: () {Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => SavedScreen(user: myId)));},
+                onTitlePressed: () {Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => SavedScreen(user: account.idUser)));},
               ),
               DrawerListTitle(
                 iconData: Icons.settings,

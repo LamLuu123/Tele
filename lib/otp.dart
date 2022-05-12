@@ -2,7 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'Database.dart';
 import 'Home.dart';
+import 'data.dart';
+import 'signup.dart';
 
 class Otp extends StatefulWidget {
   final String Phone;
@@ -13,6 +16,7 @@ class Otp extends StatefulWidget {
 }
 
 class _OtpState extends State<Otp> {
+  bool Exsis;
   Timer time;
   Duration duration = const Duration(seconds: 150);
   TextEditingController controll1 = TextEditingController();
@@ -21,12 +25,51 @@ class _OtpState extends State<Otp> {
   TextEditingController controll4 = TextEditingController();
   final _otpKey=GlobalKey<FormState>();
   String correct='';
-
+  void getAcc(String phone) async {
+    await FirebaseApi.getAcc(phone).then((value){
+      String idUser;
+      String name;
+      String urlAvatar;
+      String Bio;
+      String Phone;
+      if(value.size!=0){
+        setState(() {
+          Exsis=true;
+        });
+      value.docs.first.data().forEach((key, value) {
+        switch(key){
+          case "name":
+            name=value;
+            break;
+          case "idUser":
+            idUser=value;
+            break;
+          case "urlAvatar":
+            urlAvatar=value;
+            break;
+          case "bio":
+            Bio=value;
+            break;
+          case "phone":
+            Phone=value;
+            break;
+        }
+      });
+      account = accData(idUser:idUser,name: name, urlAvatar: urlAvatar, Bio: Bio, Phone: Phone);
+    }else {
+        setState(() {
+          Exsis=false;
+        });
+      }});
+    //print(account.name.toString());
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     StartTime();
+    print(widget.Phone);
+    getAcc(widget.Phone);
   }
   void subTime() {
     final sub = 1;
@@ -194,10 +237,16 @@ class _OtpState extends State<Otp> {
               FocusScope.of(context).previousFocus();
             }
             if(controll1.text=='2'&&controll2.text=='8'&&controll3.text=='5'&&controll4.text=='1'){
+              if(Exsis){
               Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => Home()));
               setState(() {
                 correct='Verifed!';
-              });
+              });}else{
+                Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => Singup(phone:widget.Phone)));
+                setState(() {
+                  correct='Verifed!';
+                });
+              }
             }else{
               if (value == ''){
                 setState(() {
