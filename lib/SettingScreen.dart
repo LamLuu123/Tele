@@ -41,12 +41,6 @@ class _SettingScreen extends State<SettingScreen> {
       account.setName(name);
       account.setPhone(Phone);
       account.setBio(Bio);
-      accountItem = [
-        Account(titles: 'Account', subtitles: ''),
-        Account(titles: "+"+account.Phone, subtitles: 'Tap to change phone number', ontap: () {}),
-        Account(titles: account.name, subtitles: 'Username', ontap: () {}),
-        Account(titles: account.Bio, subtitles: 'Add a few word about yourself', ontap: () {})
-      ];
     });
     print(account.Phone.toString());
     print(account.Bio.toString());
@@ -116,6 +110,7 @@ class _SettingScreen extends State<SettingScreen> {
                             onTap: ()=>PhoneDialog(context, accountItem[index].titles).then((value){
                               if(value!=null){
                               setState(() {
+                                accountItem[index].setTitles(value);
                                 phone=value;
                                 account.upDatePhone(value);
                               });}
@@ -129,6 +124,7 @@ class _SettingScreen extends State<SettingScreen> {
                               onTap: ()=>NameDialog(context, accountItem[index].titles).then((value){
                                 if(value!=null){
                                   setState(() {
+                                    accountItem[index].setTitles(value);
                                     name=value;
                                     account.upDateName(value);
                                   });}
@@ -143,10 +139,13 @@ class _SettingScreen extends State<SettingScreen> {
                               onTap: ()=>BioDialog(context, accountItem[index].titles).then((value){
                                 if(value!=null){
                                   setState(() {
+                                    accountItem[index].setTitles(value);
                                     bio=value;
                                     account.upDateBio(value);
                                   });}else{
                                   setState(() {
+                                    print(value);
+                                    accountItem[index].setTitles("Bio");
                                     bio="Bio";
                                     account.upDateBio("Bio");
                                   });

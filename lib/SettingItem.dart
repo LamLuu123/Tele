@@ -4,17 +4,20 @@ import 'Dialog.dart';
 import 'data.dart';
 
 class Account {
-  final String titles;
-  final String subtitles;
-  final VoidCallback ontap;
+  String titles;
+  String subtitles;
+  VoidCallback ontap;
   Account({this.titles, this.subtitles, this.ontap});
+  setTitles(String title){
+    !(title=='')?this.titles=title:this.titles="Bio";
+  }
 }
 
 List<Account> accountItem = [
 Account(titles: 'Account', subtitles: ''),
-Account(titles: "+"+account.Phone, subtitles: 'Tap to change phone number', ontap: () {}),
+Account(titles: account.Phone, subtitles: 'Tap to change phone number', ontap: () {}),
 Account(titles: account.name, subtitles: 'Username', ontap: () {}),
-Account(titles: account.Bio, subtitles: 'Add a few word about yourself', ontap: () {})
+Account(titles: account.Bio==''?"Bio":account.Bio, subtitles: 'Add a few word about yourself', ontap: () {})
 ];
 
 class Setting {

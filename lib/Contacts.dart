@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'ChatScreen.dart';
+import 'chat_screen.dart';
 import 'Database.dart';
 import 'SearchScreen.dart';
 import 'data.dart';
